@@ -11,4 +11,7 @@ const app = firebase.initializeApp({
 });
 
 export const auth = app.auth();
+const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+googleAuthProvider.addScope('email');
+export const googleAuth = () => { return auth.signInWithPopup(googleAuthProvider) }
 export default app;

@@ -1,11 +1,12 @@
 import React, { useRef, useState, } from 'react';
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom';
+import GoogleLogin from './GoogleLogin';
 
-const Login = () => {
+export default function Login() {
     const emailRef = useRef();
     const passwordRef = useRef();
-    const { login } = useAuth();
+    const { emailLogin } = useAuth();
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const history = useHistory();
@@ -16,7 +17,7 @@ const Login = () => {
         try {
             setError(null);
             setLoading(true);
-            await login(emailRef.current.value, passwordRef.current.value);
+            await emailLogin(emailRef.current.value, passwordRef.current.value);
             history.push("/");
         } catch {
             setError('Failed to log in');
@@ -26,7 +27,7 @@ const Login = () => {
 
     return (
         <>
-            <div class="grid min-h-screen place-items-center">
+            <div class="grid place-items-center">
                 <div class="w-11/12 p-12 bg-white sm:w-8/12 md:w-1/2 lg:w-5/12">
                     <h1 class="text-xl font-semibold">Log into your account. {error && <span class="font-normal text-red-600 text-sm">{error}</span>}</h1>
                     <form class="mt-6" onSubmit={handleSubmit} >
@@ -40,9 +41,10 @@ const Login = () => {
                         <p class="flex justify-between inline-block mt-4 text-xs text-gray-500 cursor-pointer hover:text-black"><Link to="/signup">Need an account?</Link></p>
                     </form>
                 </div>
+                <hr class="w-7/12 mb-4 border-0 border-t border-gray-300" />
+                <h1 class="text-xl font-semibold text-center">OR</h1>
+                <GoogleLogin setError={setError} loading={loading} setLoading={setLoading} />
             </div>
         </>
     );
 }
-
-export default Login;

@@ -1,6 +1,7 @@
 import React, { useRef, useState, } from 'react';
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom';
+import GoogleLogin from './GoogleLogin'
 
 const Signup = () => {
     const emailRef = useRef();
@@ -31,7 +32,7 @@ const Signup = () => {
 
     return (
         <>
-            <div class="grid min-h-screen place-items-center">
+            <div class="grid place-items-center">
                 <div class="w-11/12 p-12 bg-white sm:w-8/12 md:w-1/2 lg:w-5/12">
                     <h1 class="text-xl font-semibold">Please register to gain access. {error && <span class="font-normal text-red-600 text-sm">{error}</span>}</h1>
                     <form class="mt-6" onSubmit={handleSubmit} >
@@ -47,6 +48,9 @@ const Signup = () => {
                         <p class="flex justify-between inline-block mt-4 text-xs text-gray-500 cursor-pointer hover:text-black"><Link to="/login">Already registered?</Link></p>
                     </form>
                 </div>
+                <hr class="w-7/12 mb-4 border-0 border-t border-gray-300" />
+                <h1 class="text-xl font-semibold text-center">OR</h1>
+                <GoogleLogin setError={setError} loading={loading} setLoading={setLoading} />
             </div>
         </>
     );
