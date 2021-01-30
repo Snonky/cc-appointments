@@ -1,7 +1,7 @@
 import React, { useState, } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useHistory } from 'react-router-dom';
-import { DoctorsOffice } from './DoctorsOffice';
+import { AppointmentCalendar } from './AppointmentCalendar';
 
 const Homepage = () => {
     const [error, setError] = useState(null);
@@ -18,6 +18,29 @@ const Homepage = () => {
             setError("Failed to log out");
         }
     }
+
+    const testAppointments = [
+        {
+            id: 0,
+            datetime: new Date('January 30, 2021 9:30:00'),
+        },
+        {
+            id: 1,
+            datetime: new Date('January 30, 2021 12:00:00'),
+        },
+        {
+            id: 2,
+            datetime: new Date('January 31, 2021 14:30:00'),
+        },
+    ];
+
+    const testOpeningHours = [...Array(7).keys()].map((day) => {
+        return {
+            day_of_week: day,
+            open: new Date('January 1, 1970 8:00:00'), 
+            close: new Date('January 1, 1970 16:30:00'), 
+        };
+    });
 
     return (
         <>
@@ -43,7 +66,13 @@ const Homepage = () => {
                 </div>
             </nav>
             <div className="w-1/2 p-7">
-                <DoctorsOffice />
+                <AppointmentCalendar
+                    appointments={testAppointments}
+                    dayCount={8}
+                    currentTime={new Date()}
+                    openingHours={testOpeningHours}
+                    timeSlot={30}
+                />
             </div>
         </>
     );
