@@ -45,6 +45,14 @@ appointment: {
 }
 ```
 
+```
+opening_hours: [{
+	day_of_week: <0-6>
+	open: datetime
+	close: datetime
+},]
+```
+
 ```json
 user_appointments: {
 	user_id
