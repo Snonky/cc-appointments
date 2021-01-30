@@ -4,6 +4,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import Login from "./Login";
 import Signup from "./Signup";
 import Homepage from "./Homepage";
+import NotFoundPage from "./404";
 
 
 function App() {
@@ -13,8 +14,10 @@ function App() {
               <AuthProvider>
                   <Switch>
                       <ProtectedRoute exact path="/" component={Homepage} />
+                      <ProtectedRoute path="/office/:officeId?" component={Homepage} />
                       <Route path="/signup" component={Signup} />
                       <Route path="/login" component={Login} />
+                      <Route component={NotFoundPage} />
                   </Switch>
               </AuthProvider>
           </Router>
