@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import AppointmentCalendar from './AppointmentCalendar'
+import OpeningHours from './OpeningHours';
 
 const testAppointments = [
     {
@@ -95,9 +96,7 @@ export default function DoctorsOffice() {
                             <div id="opening-title" className="rounded border-2 border-gray-300 mb-3 text-center text-lg font-semibold bg-blue-200">
                                 <p>Opening Hours</p>
                             </div>
-                            <p>HNO Praxis am Altschauerberg</p>
-                            <p>Altschauerberg 8</p>
-                            <p>12345 Entenhausen</p>
+                            <OpeningHours openingHours={office.openingHours} />
                         </div>
                         <div id="address" className="p-3 rounded border-2 border-gray-300">
                             <div id="address-title" className="rounded border-2 border-gray-300 mb-3 text-center text-lg font-semibold bg-blue-200">
