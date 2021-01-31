@@ -1,14 +1,50 @@
 import React, { useEffect, useState } from 'react';
+import { Switch, Route } from 'react-router-dom';
 import { DateTime } from 'luxon';
+import AppointmentForm from './AppointmentForm';
 
 export default function AppointmentCalendar({ appointments, currentTime, dayCount, timeSlot, openingHours }) {
-    const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const [selectedSlot, setSelectedSlot] = useState(null);
+
+    function handleAppointmentSubmit(description, insurance) {
+        // Send appointment here
+        setSelectedSlot(null);
+    }
+
+
+    if (selectedSlot) {
+        return (
+            <AppointmentForm
+                timeSlot={selectedSlot}
+                onSubmit={handleAppointmentSubmit}
+                onCancel={() => setSelectedSlot(null)}
+            />
+        );
+    } else {
+        return (
+            <>
+                <AppointmentSelector
+                    appointments={appointments}
+                    currentTime={currentTime}
+                    dayCount={dayCount}
+                    timeSlot={timeSlot}
+                    openingHours={openingHours}
+                    onSlotSelect={setSelectedSlot}
+                />
+            </>
+        );
+    }
+}
+
+export function AppointmentSelector({ appointments, currentTime, dayCount, timeSlot, openingHours, onSlotSelect }) {
     let date = DateTime.fromJSDate(currentTime).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
-    let i = 0;
+    let nDays = 0;
     const calendarDays = [];
-    while (calendarDays.length < dayCount && i < 21) {
+    // Add days (columns) to the calendar until a maximum of 21
+    while (calendarDays.length < dayCount && nDays < 21) {
         const weekday = date.weekday - 1;
         const currentHours = openingHours.find(oh => oh.day_of_week === weekday);
+        // Only add the day when the office has opening hours on that weekday
         if (currentHours && currentHours.open) {
             const calendarDay = {
                 date: date,
@@ -18,7 +54,7 @@ export default function AppointmentCalendar({ appointments, currentTime, dayCoun
             calendarDays.push(calendarDay);
         }
         date = date.plus({ day: 1 })
-        i++;
+        nDays++;
     }
 
     const calendarHeader = calendarDays.map((calendarDay, i) => {
@@ -29,24 +65,27 @@ export default function AppointmentCalendar({ appointments, currentTime, dayCoun
         );
     });
 
+    // Timestamps for the rows of the calender go from 7:00 to 18:00
     let slotTime = DateTime.local(1970, 1, 1, 7);
     const endTime = DateTime.local(1970, 1, 1, 18, timeSlot);
+    // Function for finding an appointment at a time slot
     const getAppointment = (slot) => appointments.find(a => slot.toMillis() === a.datetime.getTime());
     const calendarSlots = [];
-    i = 0;
     while (slotTime < endTime) {
         for (const calendarDay of calendarDays) {
-            const slotDate = calendarDay.date.set({ hour: slotTime.hour, minute: slotTime.minute });
+            const slotDateTime = calendarDay.date.set({ hour: slotTime.hour, minute: slotTime.minute });
+            const isFree = !getAppointment(slotDateTime);
+            const isLocked = slotTime < calendarDay.open || slotTime >= calendarDay.close;
             calendarSlots.push(<TimeSlot
                 label={slotTime.toLocaleString(DateTime.TIME_24_SIMPLE)}
-                isFree={!getAppointment(slotDate)}
-                isLocked={slotTime < calendarDay.open || slotTime >= calendarDay.close}
-                key={slotDate.toMillis()}
+                isFree={isFree}
+                isLocked={isLocked}
+                onSlotSelect={(isFree && !isLocked) ? () => onSlotSelect(slotDateTime) : null}
+                key={slotDateTime.toMillis()}
             />);
         };
         slotTime = slotTime.plus({ minutes: timeSlot });
     }
-
 
     return (
         <>
@@ -58,10 +97,11 @@ export default function AppointmentCalendar({ appointments, currentTime, dayCoun
     );
 }
 
-export function TimeSlot({ label, isFree, isLocked }) {
+function TimeSlot({ label, isFree, isLocked, onSlotSelect }) {
     const bg = isLocked ? "bg-gray-500 text-gray-400"
         : isFree ? "bg-green-200" : "bg-red-100 text-gray-300";
+    const cursor = onSlotSelect ? "cursor-pointer hover:bg-green-300" : "";
     return (
-        <div className={bg + " rounded text-center"}>{ label }</ div>
+        <div onClick={onSlotSelect} className={`${bg} ${cursor} rounded text-center`}>{label}</ div>
     );
 }

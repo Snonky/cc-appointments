@@ -64,8 +64,8 @@ export default function DoctorsOffice() {
 
             </>
             */
-            <div id="office" className="flex flex-col md:w-8/12 sm:w-full mx-auto space-y-6">
-                <div id="title" className="flex flex-col justify-center h-20 bg-blue-100 text-center text-2xl rounded border-2 border-gray-400">
+            <div id="office" className="flex flex-col md:w-8/12 sm:w-full mx-auto space-y-6 mb-40">
+                <div id="title" className="flex flex-col justify-center h-20 bg-blue-200 text-center text-2xl rounded border-2 border-gray-400">
                     <p>HNO Praxis am Altschauerberg</p>
                 </div>
                 <div id="content" className="flex flex-row justify-between space-x-2">
@@ -91,8 +91,18 @@ export default function DoctorsOffice() {
                         <div id="avatar" className="p-3 rounded border-2 border-gray-300">
                             <p className="text-lg">Profile Picture</p>
                         </div>
+                        <div id="opening-hours" className="p-3 rounded border-2 border-gray-300">
+                            <div id="opening-title" className="rounded border-2 border-gray-300 mb-3 text-center text-lg font-semibold bg-blue-200">
+                                <p>Opening Hours</p>
+                            </div>
+                            <p>HNO Praxis am Altschauerberg</p>
+                            <p>Altschauerberg 8</p>
+                            <p>12345 Entenhausen</p>
+                        </div>
                         <div id="address" className="p-3 rounded border-2 border-gray-300">
-                            <p className="text-lg">Address:</p>
+                            <div id="address-title" className="rounded border-2 border-gray-300 mb-3 text-center text-lg font-semibold bg-blue-200">
+                                <p>Address</p>
+                            </div>
                             <p>HNO Praxis am Altschauerberg</p>
                             <p>Altschauerberg 8</p>
                             <p>12345 Entenhausen</p>
