@@ -33,12 +33,12 @@ const Homepage = () => {
 
     return (
         <>
-            <nav className="flex items-center justify-between flex-wrap bg-gray-100 p-6">
+            <nav className="flex items-center justify-between flex-nowrap bg-gray-100 p-6 mb-3">
                 <div className="flex items-center flex-no-shrink text-black mr-6">
                     <span className="font-semibold text-xl tracking-tight">Appointments</span>
                 </div>
                 <div className="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
-                    <div className="text-sm lg:flex-grow">
+                    <div className="text-sm flex-grow">
                         <form onSubmit={handleSearch} >
                             <input
                                 value={searchTerms}
@@ -49,12 +49,12 @@ const Homepage = () => {
                             />
                         </form>
                     </div>
-                    <div>
-                        <span className="inline-block text-sm px-4 py-2 text-black mx-3 mt-4 lg:mt-0">{currentUser.email}</span>
-                    </div>
-                    <div>
-                        <button onClick={handleLogout} className="inline-block text-sm px-4 py-2 leading-none border rounded text-black border-gray-400 hover:border-black mx-3 mt-4 lg:mt-0">Log out</button>
-                    </div>
+                </div>
+                <div>
+                    <span className="inline-block text-sm px-4 py-2 text-black mx-3 mt-4 lg:mt-0">{currentUser.email}</span>
+                </div>
+                <div>
+                    <button onClick={handleLogout} className="inline-block text-sm px-4 py-2 leading-none border rounded text-black border-gray-400 hover:border-black mx-3 mt-4 lg:mt-0">Log out</button>
                 </div>
             </nav>
             <Switch>
