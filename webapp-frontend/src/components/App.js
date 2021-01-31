@@ -14,7 +14,8 @@ function App() {
               <AuthProvider>
                   <Switch>
                       <ProtectedRoute exact path="/" component={Homepage} />
-                      <ProtectedRoute path="/office/:officeId?" component={Homepage} />
+                      <ProtectedRoute path="/office" component={Homepage} />
+                      <ProtectedRoute path="/search" component={Homepage} />
                       <Route path="/signup" component={Signup} />
                       <Route path="/login" component={Login} />
                       <Route component={NotFoundPage} />

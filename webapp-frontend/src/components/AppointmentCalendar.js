@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DateTime } from 'luxon';
 
-export function AppointmentCalendar({ appointments, currentTime, dayCount, timeSlot, openingHours }) {
+export default function AppointmentCalendar({ appointments, currentTime, dayCount, timeSlot, openingHours }) {
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     let date = DateTime.fromJSDate(currentTime).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
     let i = 0;
