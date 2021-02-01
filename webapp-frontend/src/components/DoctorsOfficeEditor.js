@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouteMatch } from 'react-router-dom';
+import AddressEditor from './AddressEditor';
 import AppointmentCalendar from './AppointmentCalendar'
 import OpeningHours from './OpeningHours';
 import OpeningHoursEditor from './OpeningHoursEditor';
@@ -27,11 +28,13 @@ const testOpeningHours = [...Array(7).keys()].map((day) => {
     };
 });
 
+const testAddress = ["Praxis fuer Phantastoloie", "An der Ecke 1337", "12345 Ecksteinhausen"];
+
 const testSearchResults = [
-    { id: 0, appointments: testAppointments, openingHours: testOpeningHours },
-    { id: 1, appointments: testAppointments, openingHours: testOpeningHours },
-    { id: 2, appointments: testAppointments, openingHours: testOpeningHours },
-    { id: 3, appointments: testAppointments, openingHours: testOpeningHours },
+    { id: 0, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
+    { id: 1, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
+    { id: 2, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
+    { id: 3, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
 ];
 
 export default function DoctorsOfficeEditor() {
@@ -58,6 +61,13 @@ export default function DoctorsOfficeEditor() {
         const newOffice = {};
         Object.assign(newOffice, office);
         newOffice.openingHours = openingHours;
+        setOffice(newOffice);
+    }
+
+    function handleAddressChange(address) {
+        const newOffice = {};
+        Object.assign(newOffice, office);
+        newOffice.address = address;
         setOffice(newOffice);
     }
 
@@ -109,9 +119,10 @@ export default function DoctorsOfficeEditor() {
                                 <div id="address-title" className="rounded border-2 border-gray-300 mb-3 text-center text-lg font-semibold bg-blue-200">
                                     <p>Address</p>
                                 </div>
-                                <p>HNO Praxis am Altschauerberg</p>
-                                <p>Altschauerberg 8</p>
-                                <p>12345 Entenhausen</p>
+                                <AddressEditor
+                                    address={office.address}
+                                    onAddressChange={handleAddressChange}
+                                />
                             </div>
                             <div id="address" className="p-3 rounded border-2 border-gray-300">
                                 <label htmlFor="gallery-upload">Upload pictures for a gallery</label>

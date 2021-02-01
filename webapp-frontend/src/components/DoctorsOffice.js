@@ -26,11 +26,13 @@ const testOpeningHours = [...Array(7).keys()].map((day) => {
     };
 });
 
+const testAddress = ["Praxis fuer Phantastoloie", "An der Ecke 1337", "12345 Ecksteinhausen"];
+
 const testSearchResults = [
-    { id: 0, appointments: testAppointments, openingHours: testOpeningHours },
-    { id: 1, appointments: testAppointments, openingHours: testOpeningHours },
-    { id: 2, appointments: testAppointments, openingHours: testOpeningHours },
-    { id: 3, appointments: testAppointments, openingHours: testOpeningHours },
+    { id: 0, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
+    { id: 1, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
+    { id: 2, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
+    { id: 3, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
 ];
 
 export default function DoctorsOffice() {
@@ -102,9 +104,7 @@ export default function DoctorsOffice() {
                             <div id="address-title" className="rounded border-2 border-gray-300 mb-3 text-center text-lg font-semibold bg-blue-200">
                                 <p>Address</p>
                             </div>
-                            <p>HNO Praxis am Altschauerberg</p>
-                            <p>Altschauerberg 8</p>
-                            <p>12345 Entenhausen</p>
+                            {office.address.map(line => <p>{line}</p>)}
                         </div>
                         <div id="address" className="p-3 rounded border-2 border-gray-300">
                             <p className="text-lg">Picture Gallery</p>
