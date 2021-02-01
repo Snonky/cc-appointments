@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Route, Switch, useHistory, generatePath } from 'react-router-dom';
 import SearchResult from './SearchResult';
 import DoctorsOffice from './DoctorsOffice';
+import DoctorsOfficeEditor from './DoctorsOfficeEditor';
 
 const Homepage = () => {
     const [error, setError] = useState(null);
@@ -61,6 +62,10 @@ const Homepage = () => {
                 <Route
                     exact path={"/"}
                     render={() => <p>Please search for a doctor's office</p>}
+                />
+                <Route
+                    path={"/office/:officeId/edit"}
+                    component={DoctorsOfficeEditor}
                 />
                 <Route
                     path={"/office/:officeId"}

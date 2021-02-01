@@ -13,7 +13,7 @@ export default function SearchResult() {
     useEffect(() => {
         setError(null);
         setLoading(true);
-        const searchTerms = params.searchTerms;
+        // const searchTerms = params.searchTerms;
         // Replace with API call
         const result = testResults;
         if (result) {
