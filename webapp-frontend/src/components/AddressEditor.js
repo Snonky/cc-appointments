@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
 
-export default function AddressEditor({ address, onAddressChange }) {
+export default function AddressEditor({ address, onChange }) {
     const inputLines = [useRef(), useRef(), useRef()];
 
     function handleInputChange() {
         const newAddress = inputLines.map(input => input.current.value);
-        onAddressChange(newAddress);
+        onChange({ address: newAddress });
     }
 
     return inputLines.map((ref, i) => {

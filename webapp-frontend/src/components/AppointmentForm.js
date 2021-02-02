@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { DateTime } from 'luxon';
 
 export default function AppointmentForm({ timeSlot, onSubmit, onCancel }) {
 	const [patientDescription, setPatientDescription] = useState("");

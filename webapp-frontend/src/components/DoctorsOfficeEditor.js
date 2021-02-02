@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useRouteMatch, useHistory, generatePath } from 'react-router-dom';
 import AddressEditor from './AddressEditor';
 import AppointmentCalendar from './AppointmentCalendar'
-import OpeningHours from './OpeningHours';
+import AppointentCalendarEditor from './AppointmentCalendarEditor';
 import OpeningHoursEditor from './OpeningHoursEditor';
 
 const testAppointments = [
@@ -28,20 +28,25 @@ const testOpeningHours = [...Array(7).keys()].map((day) => {
     };
 });
 
+
 const testAddress = ["Praxis fuer Phantastoloie", "An der Ecke 1337", "12345 Ecksteinhausen"];
+const testTitle = "HNO Praxis am Altschauerberg";
+const testDesc = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis finibus rutrum leo ac maximus. Phasellus tempus ipsum vel lobortis iaculis. Cras ornare, augue finibus bibendum elementum, neque justo molestie turpis, et gravida velit nisl sed dui. Proin elit nisl, hendrerit sed varius quis, faucibus et mauris. Curabitur ut enim ultrices, ultricies lectus id, feugiat nisl. Fusce tellus tortor, vehicula vel est eu, lobortis tempus quam. Nulla rhoncus facilisis lorem. Donec pretium velit mi, in tempus est lacinia ornare. In at ultricies massa. ";
 
 const testSearchResults = [
-    { id: 0, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
-    { id: 1, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
-    { id: 2, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
-    { id: 3, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
+    { id: 0, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress, title: testTitle, timeSlot: 30, dayCount: 5, description: testDesc },
+    { id: 1, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress, title: testTitle, timeSlot: 30, dayCount: 5, description: testDesc },
+    { id: 2, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress, title: testTitle, timeSlot: 30, dayCount: 5, description: testDesc },
+    { id: 3, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress, title: testTitle, timeSlot: 30, dayCount: 5, description: testDesc },
 ];
 
 export default function DoctorsOfficeEditor() {
     const [office, setOffice] = useState();
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const { params } = useRouteMatch();
+    const history = useHistory();
 
     useEffect(() => {
         setLoading(true);
@@ -57,18 +62,19 @@ export default function DoctorsOfficeEditor() {
         }
     }, []);
 
-    function handleHoursChange(openingHours) {
+    function handleChange(value) {
         const newOffice = {};
         Object.assign(newOffice, office);
-        newOffice.openingHours = openingHours;
+        Object.assign(newOffice, value);
         setOffice(newOffice);
     }
 
-    function handleAddressChange(address) {
-        const newOffice = {};
-        Object.assign(newOffice, office);
-        newOffice.address = address;
-        setOffice(newOffice);
+    function handleSubmit(e) {
+        e.preventDefault();
+        setSaving(true);
+        // Send update to API here
+        setSaving(false);
+        history.push(generatePath('/office/:officeId', { officeId: office.id }));
     }
 
     if (error) {
@@ -77,27 +83,52 @@ export default function DoctorsOfficeEditor() {
         return <p>Loading...</p>;
     } else {
         return (
-            <form>
-                <div id="office" className="flex flex-col md:w-8/12 sm:w-full mx-auto space-y-6 mb-40">
+            <form onSubmit={handleSubmit}>
+                <div id="office" className="flex flex-col lg:w-8/12 md:w-full mx-auto space-y-6 mb-40">
+                    <button className="w-full bg-green-400 text-lg text-white py-2"
+                        type="submit"
+                        disabled={saving}
+                    >
+                        {saving ? "Saving..." : "Save Changes"}
+                    </button>
                     <div id="title" className="flex flex-col justify-center h-20 bg-blue-200 text-center text-2xl rounded border-2 border-gray-400">
-                        <input className="text-center" placeholder="Title your office's page" name="title-input" type="text" value={office.title} maxLength="50" />
+                        <input className="text-center" placeholder="Title your office's page" name="title-input" type="text"
+                            maxLength="50"
+                            value={office.title}
+                            onChange={(e) => handleChange({ title: e.target.value })}
+                        />
                     </div>
                     <div id="content" className="flex flex-row justify-between space-x-2">
-                        <div id="content-column" className="flex flex-col space-y-3" style={{ flex: 2}}>
+                        <div id="content-column" className="flex flex-col space-y-3 min-w-0 overflow-hidden" style={{ flex: 2 }}>
                             <div id="description" className="p-3 rounded border-2 border-gray-300">
-                                <textarea name="description-textarea" className="w-full border border-gray-400" placeholder="Enter a description of your office" rows="8" maxLength="2000"/>
+                                <textarea name="description-textarea" className="w-full border border-gray-400"
+                                    placeholder="Enter a description of your office"
+                                    rows="8"
+                                    maxLength="2000"
+                                    value={office.description}
+                                    onChange={(e) => handleChange({ description: e.target.value })}
+                                />
                             </div>
 
                             <div id="calendar" className="p-3 rounded border-2 border-gray-300">
                                 <div id="calender-title" className="rounded border-2 border-gray-300 mb-3 text-center text-lg font-semibold bg-blue-200">
-                                    <p>Appointments</p>
+                                    <p>Appointment Calendar Settings</p>
+                                </div>
+                                <AppointentCalendarEditor
+                                    dayCount={office.dayCount}
+                                    timeSlot={office.timeSlot}
+                                    onChange={handleChange}
+                                />
+                                <div id="calender-preview-title" className="rounded border-2 border-gray-300 my-3 text-center text-lg font-semibold bg-blue-200">
+                                    <p>Calendar Preview</p>
                                 </div>
                                 <AppointmentCalendar
                                     appointments={office.appointments}
-                                    dayCount={5}
+                                    dayCount={office.dayCount}
                                     currentTime={new Date()}
                                     openingHours={office.openingHours}
-                                    timeSlot={30}
+                                    timeSlot={office.timeSlot}
+                                    selectable={false}
                                 />
                             </div>
                         </div>
@@ -112,7 +143,7 @@ export default function DoctorsOfficeEditor() {
                                 </div>
                                 <OpeningHoursEditor
                                     openingHours={office.openingHours}
-                                    onHoursChange={handleHoursChange}
+                                    onChange={handleChange}
                                 />
                             </div>
                             <div id="address" className="p-3 rounded border-2 border-gray-300">
@@ -121,7 +152,7 @@ export default function DoctorsOfficeEditor() {
                                 </div>
                                 <AddressEditor
                                     address={office.address}
-                                    onAddressChange={handleAddressChange}
+                                    onChange={handleChange}
                                 />
                             </div>
                             <div id="address" className="p-3 rounded border-2 border-gray-300">
@@ -130,6 +161,12 @@ export default function DoctorsOfficeEditor() {
                             </div>
                         </div>
                     </div>
+                    <button className="w-full bg-green-400 text-lg text-white py-2"
+                        type="submit"
+                        disabled={saving}
+                    >
+                        {saving ? "Saving..." : "Save Changes"}
+                    </button>
                 </div>
             </form>
         );

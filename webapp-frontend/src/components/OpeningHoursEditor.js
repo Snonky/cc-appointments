@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { DateTime } from 'luxon';
 
-export default function OpeningHoursEditor({ openingHours, onHoursChange }) {
+export default function OpeningHoursEditor({ openingHours, onChange }) {
     const weekDays = [...Array(7).keys()];
     const zeroPad = (num, places) => String(num).padStart(places, '0')
 
@@ -22,7 +22,7 @@ export default function OpeningHoursEditor({ openingHours, onHoursChange }) {
         } else {
             newState[idx].close = openingHour;
         }
-        onHoursChange(newState);
+        onChange({ openingHours: newState });
     }
 
     function handleUnfocus(e, weekday, isOpen) {
@@ -45,7 +45,7 @@ export default function OpeningHoursEditor({ openingHours, onHoursChange }) {
         } else {
             newState = newState.filter(oh => oh.day_of_week !== weekday);
         }
-        onHoursChange(newState);
+        onChange({ openingHours: newState });
     }
 
     return (

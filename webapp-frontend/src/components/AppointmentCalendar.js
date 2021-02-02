@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { DateTime } from 'luxon';
 import AppointmentForm from './AppointmentForm';
 
-export default function AppointmentCalendar({ appointments, currentTime, dayCount, timeSlot, openingHours }) {
+export default function AppointmentCalendar({ appointments, currentTime, dayCount, timeSlot, openingHours, selectable }) {
     const [selectedSlot, setSelectedSlot] = useState(null);
 
     function handleAppointmentSubmit(description, insurance) {
@@ -30,14 +30,16 @@ export default function AppointmentCalendar({ appointments, currentTime, dayCoun
                     timeSlot={timeSlot}
                     openingHours={openingHours}
                     onSlotSelect={setSelectedSlot}
+                    selectable={selectable}
                 />
             </>
         );
     }
 }
 
-export function AppointmentSelector({ appointments, currentTime, dayCount, timeSlot, openingHours, onSlotSelect }) {
+export function AppointmentSelector({ appointments, currentTime, dayCount, timeSlot, openingHours, onSlotSelect, selectable }) {
     let date = DateTime.fromJSDate(currentTime).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
+    const today = date;
     let nDays = 0;
     const calendarDays = [];
     // Add days (columns) to the calendar until a maximum of 21
@@ -58,7 +60,7 @@ export function AppointmentSelector({ appointments, currentTime, dayCount, timeS
     }
 
     const calendarHeader = calendarDays.map((calendarDay, i) => {
-        const bg = i === 0 ? "bg-red-400" : "bg-gray-300";
+        const bg = calendarDay.date === today ? "bg-red-400" : "bg-gray-300";
         const dayStr = calendarDay.date.weekdayShort;
         return (
             <div key={dayStr + calendarDay.date.toMillis()} className={bg + " text-center"}>{dayStr}</div>
@@ -67,7 +69,7 @@ export function AppointmentSelector({ appointments, currentTime, dayCount, timeS
 
     // Timestamps for the rows of the calender go from 7:00 to 18:00
     let slotTime = DateTime.local(1970, 1, 1, 7);
-    const endTime = DateTime.local(1970, 1, 1, 18, timeSlot);
+    const endTime = DateTime.local(1970, 1, 1, 18).plus({ minutes: timeSlot });
     // Function for finding an appointment at a time slot
     const getAppointment = (slot) => appointments.find(a => slot.toMillis() === a.datetime.getTime());
     const calendarSlots = [];
@@ -80,7 +82,7 @@ export function AppointmentSelector({ appointments, currentTime, dayCount, timeS
                 label={slotTime.toLocaleString(DateTime.TIME_24_SIMPLE)}
                 isFree={isFree}
                 isLocked={isLocked}
-                onSlotSelect={(isFree && !isLocked) ? () => onSlotSelect(slotDateTime) : null}
+                onSlotSelect={(isFree && !isLocked && selectable) ? () => onSlotSelect(slotDateTime) : null}
                 key={slotDateTime.toMillis()}
             />);
         };

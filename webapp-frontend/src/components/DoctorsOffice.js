@@ -27,12 +27,14 @@ const testOpeningHours = [...Array(7).keys()].map((day) => {
 });
 
 const testAddress = ["Praxis fuer Phantastoloie", "An der Ecke 1337", "12345 Ecksteinhausen"];
+const testTitle = "HNO Praxis am Altschauerberg";
+const testDesc = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis finibus rutrum leo ac maximus. Phasellus tempus ipsum vel lobortis iaculis. Cras ornare, augue finibus bibendum elementum, neque justo molestie turpis, et gravida velit nisl sed dui. Proin elit nisl, hendrerit sed varius quis, faucibus et mauris. Curabitur ut enim ultrices, ultricies lectus id, feugiat nisl. Fusce tellus tortor, vehicula vel est eu, lobortis tempus quam. Nulla rhoncus facilisis lorem. Donec pretium velit mi, in tempus est lacinia ornare. In at ultricies massa. ";
 
 const testSearchResults = [
-    { id: 0, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
-    { id: 1, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
-    { id: 2, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
-    { id: 3, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress },
+    { id: 0, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress, title: testTitle, timeSlot: 30, dayCount: 5, description: testDesc },
+    { id: 1, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress, title: testTitle, timeSlot: 30, dayCount: 5, description: testDesc },
+    { id: 2, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress, title: testTitle, timeSlot: 30, dayCount: 5, description: testDesc },
+    { id: 3, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress, title: testTitle, timeSlot: 30, dayCount: 5, description: testDesc },
 ];
 
 export default function DoctorsOffice() {
@@ -67,16 +69,15 @@ export default function DoctorsOffice() {
 
             </>
             */
-            <div id="office" className="flex flex-col md:w-8/12 sm:w-full mx-auto space-y-6 mb-40">
+            <div id="office" className="flex flex-col lg:w-8/12 md:w-full mx-auto space-y-6 mb-40">
                 <div id="title" className="flex flex-col justify-center h-20 bg-blue-200 text-center text-2xl rounded border-2 border-gray-400">
-                    <p>HNO Praxis am Altschauerberg</p>
+                    <p>{ office.title }</p>
                 </div>
                 <div id="content" className="flex flex-row justify-between space-x-2">
-                    <div id="content-column" className="flex flex-col space-y-3" style={{ flex: 2 }}>
+                    <div id="content-column" className="flex flex-col space-y-3 min-w-0 overflow-hidden" style={{ flex: 2 }}>
                         <div id="description" className="p-3 rounded border-2 border-gray-300">
-                            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+                            {office.description}
                         </div>
-
                         <div id="calendar" className="p-3 rounded border-2 border-gray-300">
                             <div id="calender-title" className="rounded border-2 border-gray-300 mb-3 text-center text-lg font-semibold bg-blue-200">
                                 <p>Appointments</p>
@@ -87,6 +88,7 @@ export default function DoctorsOffice() {
                                 currentTime={new Date()}
                                 openingHours={office.openingHours}
                                 timeSlot={30}
+                                selectable={true}
                             />
                         </div>
                     </div>
