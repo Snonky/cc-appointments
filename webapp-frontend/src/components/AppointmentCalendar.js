@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import classNames from 'classnames';
 import { DateTime } from 'luxon';
 import AppointmentForm from './AppointmentForm';
 
@@ -89,9 +89,29 @@ export function AppointmentSelector({ appointments, currentTime, dayCount, timeS
         slotTime = slotTime.plus({ minutes: timeSlot });
     }
 
+    // List all possible grid-col classes of the calendar so webpack recognizes them at buildtime
+    const gridClasses = {
+        'grid': true,
+        'gap-2': true,
+        'grid-cols-1': false,
+        'grid-cols-2': false,
+        'grid-cols-3': false,
+        'grid-cols-4': false,
+        'grid-cols-5': false,
+        'grid-cols-6': false,
+        'grid-cols-7': false,
+        'grid-cols-8': false,
+        'grid-cols-9': false,
+        'grid-cols-10': false,
+        'grid-cols-11': false,
+        'grid-cols-12': false,
+    };
+
+    gridClasses[`grid-cols-${calendarHeader.length}`] = true;
+
     return (
         <>
-            <div className={`grid grid-cols-${calendarHeader.length} gap-2`}>
+            <div className={classNames(gridClasses)}>
                 {calendarHeader}
                 {calendarSlots}
             </div>
