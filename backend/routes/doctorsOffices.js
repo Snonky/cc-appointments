@@ -5,6 +5,20 @@ const { Firestore } = require('@google-cloud/firestore');
 const firestore = new Firestore();
 const docsOffices = firestore.collection('doctors-offices');
 
+const { v4: uuidv4 } = require('uuid');
+
+const { Storage } = require('@google-cloud/storage');
+const storage = new Storage();
+const bucket = storage.bucket('cc-appointments-images');
+
+const Multer = require('multer');
+const multer = Multer({
+	storage: Multer.memoryStorage(),
+	limits: {
+		fileSize: 5 * 1024 * 1024, // no larger than 5mb, you can change as needed.
+	},
+});
+
 const validateDoctorsOffice = require('../schema/doctorsOffice');
 const validateAppointment = require('../schema/appointment');
 
@@ -56,6 +70,95 @@ router.delete('/:id', async (req, res) => {
 	const deleteRes = await docRef.delete();
 	res.send({ 'id': req.params.id });
 });
+
+
+// image upload
+
+router.post('/:id/upload-avatar', multer.single('file'), async (req, res) => {
+	if (!req.file) {
+		res.status(400).send({ error: 'No file uploaded' });
+		return;
+	}
+	const filetypes = /jpeg|jpg|png/;
+	if (!filetypes.test(req.file.mimetype)) {
+		res.status(422).send({ error: 'Wrong filetype uploaded (only jpg, jpeg or png are supported)' });
+		return;
+	}
+	const docRef = docsOffices.doc(req.params.id);
+	const document = await docRef.get();
+	if (!document.exists) {
+		res.status(404).json({ error: 'Doctors Office not found' });
+		return;
+	}
+
+	const fileName = `${uuidv4()}-${req.file.originalname}`;
+	const blob = bucket.file(fileName);
+	const blobStream = blob.createWriteStream();
+	blobStream.on('error', err => {
+		// res.status(400).json({
+		// 	error: 'Error uploading file',
+		// 	message: err
+		// });
+		// return;
+		console.error(err);
+	});
+	blobStream.on('finish', async () => {
+		const publicUrl = `https://storage.googleapis.com/cc-appointments-images/${blob.name}`;
+		const addRes = await docRef.update({
+			avatarUrl: publicUrl
+		});
+		const newDocument = await docRef.get();
+		res.send(newDocument.data());
+	});
+	blobStream.end(req.file.buffer);
+
+});
+
+router.post('/:id/upload-pictures', multer.array('files'), async (req, res) => {
+	if (!req.files) {
+		res.status(400).send('No files uploaded');
+		return;
+	}
+
+	const docRef = docsOffices.doc(req.params.id);
+	const document = await docRef.get();
+	if (!document.exists) {
+		res.status(404).json({ error: 'Doctors Office not found' });
+		return;
+	}
+	if(!'pictureUrls' in document) {
+		docRef.set({ 'pictureUrls': [] });
+	}
+
+	for (const file of req.files) {
+		const filetypes = /jpeg|jpg|png/;
+		if (!filetypes.test(file.mimetype)) {
+			res.status(422).send({ error: 'Wrong filetype uploaded (only jpg, jpeg or png are supported)' });
+			return;
+		}
+		const fileName = `${uuidv4()}-${file.originalname}`;
+		const blob = bucket.file(fileName);
+		const blobStream = blob.createWriteStream();
+		blobStream.on('error', err => {
+			res.status(400).json({
+				error: 'Error uploading file',
+				message: err
+			});
+			return;
+		});
+		blobStream.on('finish', async () => {
+			await docRef.update({
+				pictureUrls: Firestore.FieldValue.arrayUnion(`https://storage.googleapis.com/cc-appointments-images/${blob.name}`)
+			});
+		});
+		blobStream.end(file.buffer);
+	}
+
+	const newDocument = await docRef.get();
+	res.send(newDocument.data());
+});
+
+// TODO delete pictures
 
 
 // appointments of one doctors office

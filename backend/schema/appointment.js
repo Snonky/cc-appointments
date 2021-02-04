@@ -16,7 +16,7 @@ const appointmentSchema = {
 		},
 		typeOfInsurance: {
 			type: "string",
-			enum: ["Gesetzlich", "Privat"]
+			enum: ["public", "private"]
 		},
 		reasonForVisit: { type: "string" },
 	},

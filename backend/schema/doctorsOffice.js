@@ -7,15 +7,15 @@ const doctorsOfficeSchema = {
 	type: "object",
 	properties: {
 		name: { type: "string" },
-		avatarId: {
+		avatarUrl: {
 			type: "string",
-			pattern: "^[a-zA-Z0-9]+$"
+			pattern: "uri"
 		},
-		pictureIds: {
+		pictureUrl: {
 			type: "array",
 			items: {
 				type: "string",
-				pattern: "^[a-zA-Z0-9]+$"
+				format: "uri"
 			}
 		},
 		websiteUrl: {
@@ -25,7 +25,28 @@ const doctorsOfficeSchema = {
 		profileDescription: { type: "string" },
 		address: { type: "string" },
 		contactInfo: { type: "string" },
-		openingHours: { type: "string" },
+		openingHours: {
+			type: "array",
+			items: {
+				type: "object",
+				properties: {
+					dayOfWeek: {
+						type: "number",
+						enum: [0, 1, 2, 3, 4, 5, 6]
+					},
+					open: { 
+						type: "string",
+						format: "date-time"
+					},
+					close: { 
+						type: "string",
+						format: "date-time"
+					}
+				},
+				required: ["dayOfWeek", "open", "close"],
+				additionalProperties: false,
+			}
+		},
 	},
 	required: ["name"],
 	additionalProperties: false,
