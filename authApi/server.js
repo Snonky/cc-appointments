@@ -3,9 +3,9 @@ import mysql from 'mysql';
 const app = express();
 
 var con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "^e%4j3^OK494lk"
+    host: process.env.CLOUD_SQL_CONNECTION_NAME,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS
   });
 
 app.get('/', (req, res) => {
