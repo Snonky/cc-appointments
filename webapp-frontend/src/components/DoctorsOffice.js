@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useRouteMatch } from 'react-router-dom';
+import { useRouteMatch, generatePath } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext'
 import AppointmentCalendar from './AppointmentCalendar'
 import OpeningHours from './OpeningHours';
 
@@ -42,19 +43,21 @@ export default function DoctorsOffice() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const { params } = useRouteMatch();
+    const { authenticatedRequest } = useAuth();
 
     useEffect(() => {
         setLoading(true);
         setError(null);
         const officeId = params.officeId;
-        // Replace with API call here
-        const fetchedOffice = testSearchResults[officeId];
-        if (fetchedOffice) {
-            setLoading(false);
-            setOffice(fetchedOffice);
-        } else {
-            setError("Doctor's office page cannot be displayed.");
-        }
+        authenticatedRequest('GET', generatePath('/doctors-office/:officeId', params))
+            .then((fetchedOffice) => {
+                setOffice(fetchedOffice);
+                setLoading(false);
+            })
+            .catch((error) => {
+                setError("Doctor's office page cannot be displayed.");
+                setLoading(false);
+            });
     }, []);
 
     if (error) {
@@ -63,15 +66,9 @@ export default function DoctorsOffice() {
         return <p>Loading...</p>;
     } else {
         return (
-            /*
-            <>
-                <p>{office.id}</p>
-
-            </>
-            */
             <div id="office" className="flex flex-col lg:w-8/12 md:w-full mx-auto space-y-6 mb-40">
                 <div id="title" className="flex flex-col justify-center h-20 bg-blue-200 text-center text-2xl rounded border-2 border-gray-400">
-                    <p>{ office.title }</p>
+                    <p>{office.title}</p>
                 </div>
                 <div id="content" className="flex flex-row justify-between space-x-2">
                     <div id="content-column" className="flex flex-col space-y-3 min-w-0 overflow-hidden" style={{ flex: 2 }}>

@@ -27,10 +27,37 @@ export function AuthProvider({ children }) {
         return auth.signOut();
     }
 
+    function authenticatedRequest(method, url, body) {
+        if (!currentUser) {
+            return "Not authenticated";
+        } else {
+            return currentUser.getIdToken(true)
+                .then((idToken) => {
+                    console.log("Fetching");
+                    return fetch("https://example.com" + url, {
+                        method: method,
+                        mode: 'cors',
+                        headers: {
+                            "Content-type": "application/json",
+                            "Authorization": "Bearer " + idToken,
+                        },
+                        body: JSON.stringify(body),
+                    })
+                        .then((response) => {
+                            if (response.ok) {
+                                return response.json();
+                            } else {
+                                throw Error(response.statusText);
+                            }
+                        })
+                        .then((json) => json);
+                });
+        }
+    }
+
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             setCurrentUser(user);
-            console.log(user)
             setLoading(false);
         });
         return unsubscribe;
@@ -43,6 +70,7 @@ export function AuthProvider({ children }) {
         googleLogin,
         signup,
         logout,
+        authenticatedRequest,
     };
 
     return (
