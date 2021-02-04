@@ -154,6 +154,7 @@ router.post('/:id/upload-pictures', multer.array('files'), async (req, res) => {
 		blobStream.end(file.buffer);
 	}
 
+	// FIXME doesnt return new image urls
 	const newDocument = await docRef.get();
 	res.send(newDocument.data());
 });
