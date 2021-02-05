@@ -9,9 +9,9 @@ const doctorsOfficeSchema = {
 		name: { type: "string" },
 		avatarUrl: {
 			type: "string",
-			pattern: "uri"
+			format: "uri"
 		},
-		pictureUrl: {
+		pictureUrls: {
 			type: "array",
 			items: {
 				type: "string",
