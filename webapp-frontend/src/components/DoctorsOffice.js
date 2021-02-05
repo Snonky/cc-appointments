@@ -3,6 +3,7 @@ import { useRouteMatch, generatePath } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext'
 import AppointmentCalendar from './AppointmentCalendar'
 import ImageList from './ImageList';
+import LoadingSpinner from './LoadingSpinner';
 import OpeningHours from './OpeningHours';
 
 export default function DoctorsOffice() {
@@ -39,7 +40,7 @@ export default function DoctorsOffice() {
     if (error) {
         return <p>{error}</p>;
     } else if (loading) {
-        return <p>Loading...</p>;
+        return <LoadingSpinner />
     } else {
         return (
             <div id="office" className="flex flex-col lg:w-8/12 md:w-full mx-auto space-y-6 mb-40">

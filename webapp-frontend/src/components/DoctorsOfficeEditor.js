@@ -5,6 +5,7 @@ import AddressEditor from './AddressEditor';
 import AppointmentCalendar from './AppointmentCalendar'
 import AppointentCalendarEditor from './AppointmentCalendarEditor';
 import ImageList from './ImageList';
+import LoadingSpinner from './LoadingSpinner';
 import OpeningHoursEditor from './OpeningHoursEditor';
 
 export default function DoctorsOfficeEditor() {
@@ -67,7 +68,7 @@ export default function DoctorsOfficeEditor() {
     if (error) {
         return <p>{error}</p>;
     } else if (loading) {
-        return <p>Loading...</p>;
+        return <LoadingSpinner />;
     } else {
         return (
             <form onSubmit={handleSubmit}>

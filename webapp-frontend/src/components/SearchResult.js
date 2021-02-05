@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, generatePath, useRouteMatch, useHistory } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import LoadingSpinner from './LoadingSpinner';
 
 export default function SearchResult() {
     const [searchResults, setSearchResults] = useState([]);
@@ -28,7 +29,7 @@ export default function SearchResult() {
     if (error) {
         return <p id="error-msg">{error}</p>;
     } else if (loading) {
-        return <p>Loading...</p>;
+        return <LoadingSpinner />
     } else {
 
         const resultList = loading ? <p>Loading...</p> :
