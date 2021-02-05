@@ -1,38 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { Link, generatePath, useRouteMatch, useHistory } from 'react-router-dom';
-
-const testResults = [{ id: 0 }, { id: 1 }, { id: 2 },];
+import { useAuth } from '../contexts/AuthContext';
 
 export default function SearchResult() {
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { authenticatedRequest } = useAuth();
     const { params } = useRouteMatch();
     const history = useHistory();
 
     useEffect(() => {
         setError(null);
         setLoading(true);
-        // const searchTerms = params.searchTerms;
-        // Replace with API call
-        const result = testResults;
-        if (result) {
-            setLoading(false);
-            setSearchResults(result);
-        } else {
-            setError('No results available');
-        }
+        authenticatedRequest('GET', '/doctors-offices/')
+            .then((fetchedOffices) => {
+                setSearchResults(fetchedOffices);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error while loading search: " + error);
+                setError("Could not load results.");
+                setLoading(false);
+            });
     }, []);
 
     if (error) {
-        return <p>{error}</p>;
+        return <p id="error-msg">{error}</p>;
+    } else if (loading) {
+        return <p>Loading...</p>;
     } else {
 
         const resultList = loading ? <p>Loading...</p> :
             searchResults.map(office =>
                 <ResultEntry
                     key={office.id}
-                    label={office.id}
+                    label={office.name}
                     link={generatePath('/office/:officeId', { officeId: office.id })}
                 />
             );

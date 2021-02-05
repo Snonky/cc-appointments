@@ -1,80 +1,67 @@
 import React, { useState, useEffect } from 'react';
 import { useRouteMatch, useHistory, generatePath } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext'
 import AddressEditor from './AddressEditor';
 import AppointmentCalendar from './AppointmentCalendar'
 import AppointentCalendarEditor from './AppointmentCalendarEditor';
+import ImageList from './ImageList';
 import OpeningHoursEditor from './OpeningHoursEditor';
-
-const testAppointments = [
-    {
-        id: 0,
-        datetime: new Date('January 31, 2021 9:30:00'),
-    },
-    {
-        id: 1,
-        datetime: new Date('January 31, 2021 12:00:00'),
-    },
-    {
-        id: 2,
-        datetime: new Date('January 31, 2021 14:30:00'),
-    },
-];
-
-const testOpeningHours = [...Array(7).keys()].map((day) => {
-    return {
-        day_of_week: day,
-        open: new Date('January 1, 1970 8:00:00'),
-        close: new Date('January 1, 1970 16:30:00'),
-    };
-});
-
-
-const testAddress = ["Praxis fuer Phantastoloie", "An der Ecke 1337", "12345 Ecksteinhausen"];
-const testTitle = "HNO Praxis am Altschauerberg";
-const testDesc = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis finibus rutrum leo ac maximus. Phasellus tempus ipsum vel lobortis iaculis. Cras ornare, augue finibus bibendum elementum, neque justo molestie turpis, et gravida velit nisl sed dui. Proin elit nisl, hendrerit sed varius quis, faucibus et mauris. Curabitur ut enim ultrices, ultricies lectus id, feugiat nisl. Fusce tellus tortor, vehicula vel est eu, lobortis tempus quam. Nulla rhoncus facilisis lorem. Donec pretium velit mi, in tempus est lacinia ornare. In at ultricies massa. ";
-
-const testSearchResults = [
-    { id: 0, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress, title: testTitle, timeSlot: 30, dayCount: 5, description: testDesc },
-    { id: 1, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress, title: testTitle, timeSlot: 30, dayCount: 5, description: testDesc },
-    { id: 2, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress, title: testTitle, timeSlot: 30, dayCount: 5, description: testDesc },
-    { id: 3, appointments: testAppointments, openingHours: testOpeningHours, address: testAddress, title: testTitle, timeSlot: 30, dayCount: 5, description: testDesc },
-];
 
 export default function DoctorsOfficeEditor() {
     const [office, setOffice] = useState();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
+    const [unsavedOfficeProps, setUnsavedOfficeProps] = useState(new Set().add("name"));
     const { params } = useRouteMatch();
     const history = useHistory();
+    const { authenticatedRequest } = useAuth();
+
+    function errorHandler(error) {
+        console.error(error);
+        setError("Doctor's office page cannot be displayed.");
+        setLoading(false);
+    }
 
     useEffect(() => {
         setLoading(true);
         setError(null);
         const officeId = params.officeId;
-        // Replace with API call here
-        const fetchedOffice = testSearchResults[officeId];
-        if (fetchedOffice) {
-            setLoading(false);
-            setOffice(fetchedOffice);
-        } else {
-            setError("Doctor's office page cannot be displayed.");
-        }
+        authenticatedRequest('GET', generatePath('/doctors-offices/:officeId', params))
+            .then((fetchedOffice) => {
+                setOffice(fetchedOffice);
+                setLoading(false);
+            })
+            .catch(errorHandler);
     }, []);
 
     function handleChange(value) {
         const newOffice = {};
+        const newUnsavedProps = new Set(unsavedOfficeProps);
         Object.assign(newOffice, office);
         Object.assign(newOffice, value);
+        Object.keys(value).forEach(prop => newUnsavedProps.add(prop));
+        setUnsavedOfficeProps(newUnsavedProps);
         setOffice(newOffice);
     }
 
     function handleSubmit(e) {
         e.preventDefault();
         setSaving(true);
-        // Send update to API here
-        setSaving(false);
-        history.push(generatePath('/office/:officeId', { officeId: office.id }));
+        const unsavedOffice = {};
+        // Copy all changed properties from the office to the request body
+        unsavedOfficeProps.forEach(prop => unsavedOffice[prop] = office[prop]);
+        authenticatedRequest('PUT', generatePath('/doctors-offices/:officeId', params), unsavedOffice)
+            .then((response) => {
+                unsavedOfficeProps.clear();
+                unsavedOfficeProps.add("name");
+                setSaving(false);
+                history.push(generatePath('/office/:officeId', params));
+            })
+            .catch((error) => {
+                console.error(error);
+                setSaving(false);
+            });
     }
 
     if (error) {
@@ -94,8 +81,8 @@ export default function DoctorsOfficeEditor() {
                     <div id="title" className="flex flex-col justify-center h-20 bg-blue-200 text-center text-2xl rounded border-2 border-gray-400">
                         <input className="text-center" placeholder="Title your office's page" name="title-input" type="text"
                             maxLength="50"
-                            value={office.title}
-                            onChange={(e) => handleChange({ title: e.target.value })}
+                            value={office.name}
+                            onChange={(e) => handleChange({ name: e.target.value })}
                         />
                     </div>
                     <div id="content" className="flex flex-row justify-between space-x-2">
@@ -105,8 +92,8 @@ export default function DoctorsOfficeEditor() {
                                     placeholder="Enter a description of your office"
                                     rows="8"
                                     maxLength="2000"
-                                    value={office.description}
-                                    onChange={(e) => handleChange({ description: e.target.value })}
+                                    value={office.profileDescription}
+                                    onChange={(e) => handleChange({ profileDescription: e.target.value })}
                                 />
                             </div>
 
@@ -123,7 +110,7 @@ export default function DoctorsOfficeEditor() {
                                     <p>Calendar Preview</p>
                                 </div>
                                 <AppointmentCalendar
-                                    appointments={office.appointments}
+                                    appointments={[]}
                                     dayCount={office.dayCount}
                                     currentTime={new Date()}
                                     openingHours={office.openingHours}
@@ -134,8 +121,9 @@ export default function DoctorsOfficeEditor() {
                         </div>
                         <div id="sidebar-column" className="flex flex-col space-y-3 min-w-0 overflow-hidden" style={{ flex: 1 }}>
                             <div id="avatar" className="p-3 rounded border-2 border-gray-300">
-                                <label htmlFor="avatar-upload">Upload a profile picture</label>
+                                <label htmlFor="avatar-upload">Upload a new profile picture</label>
                                 <input name="avatar-upload" type="file" />
+                                <ImageList imageUrls={[office.avatarUrl]} />
                             </div>
                             <div id="opening-hours" className="p-3 rounded border-2 border-gray-300">
                                 <div id="opening-title" className="rounded border-2 border-gray-300 mb-3 text-center text-lg font-semibold bg-blue-200">
@@ -158,6 +146,7 @@ export default function DoctorsOfficeEditor() {
                             <div id="address" className="p-3 rounded border-2 border-gray-300">
                                 <label htmlFor="gallery-upload">Upload pictures for a gallery</label>
                                 <input name="gallery-upload" type="file" />
+                                <ImageList imageUrls={office.pictureUrls} />
                             </div>
                         </div>
                     </div>

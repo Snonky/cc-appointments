@@ -7,30 +7,27 @@ export default function OpeningHoursEditor({ openingHours, onChange }) {
 
     function handleTimeChange(e, weekday, isOpen) {
         const regex = new RegExp("^[0-9]{0,2}:[0-9]{0,2}$");
-        const openingHrs = openingHours.find(oh => oh.day_of_week === weekday);
-        const openingHour = new Date(isOpen ? openingHrs.open : openingHrs.close);
         if (!regex.test(e.target.value)) {
-            e.target.value = `${zeroPad(openingHour.getHours(), 2)}:${zeroPad(openingHour.getMinutes(), 2)}`
+            return;
         }
         const [hour, minute] = e.target.value.split(':');
-        openingHour.setHours(parseInt(hour) || 0);
-        openingHour.setMinutes(parseInt(minute) || 0);
+        const changedHour = DateTime.fromObject({ year: 1970, month: 1, day: 1, hour: parseInt(hour) || 0, minute: parseInt(minute) || 0 });
         let newState = [...openingHours];
-        const idx = newState.findIndex(oh => oh.day_of_week === weekday);
+        const idx = newState.findIndex(oh => oh.dayOfWeek === weekday);
         if (isOpen) {
-            newState[idx].open = openingHour;
+            newState[idx].open = changedHour.toISO();
         } else {
-            newState[idx].close = openingHour;
+            newState[idx].close = changedHour.toISO();
         }
         onChange({ openingHours: newState });
     }
 
     function handleUnfocus(e, weekday, isOpen) {
         const regex = new RegExp("^[0-9]{2}:[0-9]{2}$");
-        const openingHrs = openingHours.find(oh => oh.day_of_week === weekday);
-        const openingHour = isOpen ? openingHrs.open : openingHrs.close;
+        const unfocusedHours = openingHours.find(oh => oh.dayOfWeek === weekday);
+        const unfocusedHour = isOpen ? DateTime.fromISO(unfocusedHours.open) : DateTime.fromISO(unfocusedHours.close);
         if (!regex.test(e.target.value)) {
-            e.target.value = `${zeroPad(openingHour.getHours(), 2)}:${zeroPad(openingHour.getMinutes(), 2)}`
+            e.target.value = `${zeroPad(unfocusedHour.hour, 2)}:${zeroPad(unfocusedHour.minute, 2)}`
         }
     }
 
@@ -38,21 +35,21 @@ export default function OpeningHoursEditor({ openingHours, onChange }) {
         let newState = [...openingHours];
         if (e.target.checked) {
             newState.push({
-                day_of_week: weekday,
-                open: new Date('January 1, 1970 7:30'),
-                close: new Date('January 1, 1970 17:00'),
+                dayOfWeek: weekday,
+                open: new Date('January 1, 1970 7:30').toISOString(),
+                close: new Date('January 1, 1970 17:00').toISOString(),
             });
         } else {
-            newState = newState.filter(oh => oh.day_of_week !== weekday);
+            newState = newState.filter(oh => oh.dayOfWeek !== weekday);
         }
         onChange({ openingHours: newState });
     }
 
     return (
         weekDays.map(day => {
-            const dayOpeningHours = openingHours.find(oh => oh.day_of_week === day);
-            const open = dayOpeningHours ? DateTime.fromJSDate(dayOpeningHours.open) : null;
-            const close = dayOpeningHours ? DateTime.fromJSDate(dayOpeningHours.close) : null;
+            const dayOpeningHours = openingHours.find(oh => oh.dayOfWeek === day);
+            const open = dayOpeningHours ? DateTime.fromISO(dayOpeningHours.open) : null;
+            const close = dayOpeningHours ? DateTime.fromISO(dayOpeningHours.close) : null;
             const dayStr = DateTime.fromObject({ weekday: day + 1 }).weekdayLong;
 
             const inputs = dayOpeningHours ?

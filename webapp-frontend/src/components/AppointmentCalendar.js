@@ -40,18 +40,20 @@ export default function AppointmentCalendar({ appointments, currentTime, dayCoun
 export function AppointmentSelector({ appointments, currentTime, dayCount, timeSlot, openingHours, onSlotSelect, selectable }) {
     let date = DateTime.fromJSDate(currentTime).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
     const today = date;
+    timeSlot = timeSlot || 30;
+    dayCount = dayCount || 5;
     let nDays = 0;
     const calendarDays = [];
     // Add days (columns) to the calendar until a maximum of 21
     while (calendarDays.length < dayCount && nDays < 21) {
         const weekday = date.weekday - 1;
-        const currentHours = openingHours.find(oh => oh.day_of_week === weekday);
+        const currentHours = openingHours.find(oh => oh.dayOfWeek === weekday);
         // Only add the day when the office has opening hours on that weekday
         if (currentHours && currentHours.open) {
             const calendarDay = {
                 date: date,
-                open: currentHours.open,
-                close: currentHours.close,
+                open: DateTime.fromISO(currentHours.open),
+                close: DateTime.fromISO(currentHours.close),
             };
             calendarDays.push(calendarDay);
         }
@@ -71,7 +73,7 @@ export function AppointmentSelector({ appointments, currentTime, dayCount, timeS
     let slotTime = DateTime.local(1970, 1, 1, 7);
     const endTime = DateTime.local(1970, 1, 1, 18).plus({ minutes: timeSlot });
     // Function for finding an appointment at a time slot
-    const getAppointment = (slot) => appointments.find(a => slot.toMillis() === a.datetime.getTime());
+    const getAppointment = (slot) => appointments.find(a => slot.toMillis() === DateTime.fromISO(a.dateTime).toMillis());
     const calendarSlots = [];
     while (slotTime < endTime) {
         for (const calendarDay of calendarDays) {

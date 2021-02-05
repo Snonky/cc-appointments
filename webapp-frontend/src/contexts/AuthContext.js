@@ -29,28 +29,33 @@ export function AuthProvider({ children }) {
 
     function authenticatedRequest(method, url, body) {
         if (!currentUser) {
-            return "Not authenticated";
+            return Promise.reject("Not authenticated");
         } else {
             return currentUser.getIdToken(true)
                 .then((idToken) => {
-                    console.log("Fetching");
-                    return fetch("https://example.com" + url, {
+                    const headers = {
+                        "Authorization": "Bearer " + idToken,
+                    }
+                    if (method !== 'GET') {
+                        headers["Content-type"] = "application/json";
+                    }
+                    return fetch(process.env.REACT_APP_API_DOMAIN + url, {
                         method: method,
                         mode: 'cors',
-                        headers: {
-                            "Content-type": "application/json",
-                            "Authorization": "Bearer " + idToken,
-                        },
+                        headers: headers,
                         body: JSON.stringify(body),
                     })
                         .then((response) => {
                             if (response.ok) {
-                                return response.json();
+                                if (method === 'GET') {
+                                    return response.json();
+                                } else {
+                                    return response.statusText;
+                                }
                             } else {
                                 throw Error(response.statusText);
                             }
-                        })
-                        .then((json) => json);
+                        });
                 });
         }
     }
