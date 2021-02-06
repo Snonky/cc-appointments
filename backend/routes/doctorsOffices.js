@@ -143,12 +143,7 @@ router.post('/:id/upload-pictures', multer.array('files'), async (req, res) => {
         const blobStream = blob.createWriteStream();
         const upload = new Promise((resolve, reject) => {
             blobStream.on('error', err => {
-                res.status(400).json({
-                    error: 'Error uploading file',
-                    message: err
-                });
                 reject(err);
-                return;
             });
             blobStream.on('finish', () => {
                 docRef.update({
@@ -166,6 +161,12 @@ router.post('/:id/upload-pictures', multer.array('files'), async (req, res) => {
             docRef.get().then(newDocument => {
                 res.send(newDocument.data());
             })
+        })
+        .catch(err => {
+            res.status(400).json({
+                error: 'Error uploading file',
+                message: err
+            });
         });
 });
 
