@@ -4,7 +4,7 @@ export default function ImageList({ imageUrls }) {
     const images = imageUrls.map(url => {
         return <img
             src={url}
-            alt="Picture"
+            alt={"Doctor's Office"}
             key={url}
         />
     });

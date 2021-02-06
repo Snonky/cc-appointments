@@ -23,7 +23,6 @@ export default function DoctorsOffice() {
     useEffect(() => {
         setLoading(true);
         setError(null);
-        const officeId = params.officeId;
         authenticatedRequest('GET', generatePath('/doctors-offices/:officeId', params))
             .then((fetchedOffice) => {
                 setOffice(fetchedOffice);
@@ -35,6 +34,7 @@ export default function DoctorsOffice() {
                 setAppointments(fetchedAppointments);
             })
             .catch(errorHandler);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (error) {
@@ -58,10 +58,10 @@ export default function DoctorsOffice() {
                             </div>
                             <AppointmentCalendar
                                 appointments={appointments}
-                                dayCount={5}
+                                dayCount={office.dayCount}
                                 currentTime={new Date()}
                                 openingHours={office.openingHours}
-                                timeSlot={30}
+                                timeSlot={office.timeSlot}
                                 selectable={true}
                             />
                         </div>

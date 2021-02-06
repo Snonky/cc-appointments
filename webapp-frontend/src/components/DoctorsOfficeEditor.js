@@ -14,6 +14,10 @@ export default function DoctorsOfficeEditor() {
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
     const [unsavedOfficeProps, setUnsavedOfficeProps] = useState(new Set().add("name"));
+    const [avatarImageFile, setAvatarImageFile] = useState(null);
+    const [unsavedAvatarImageFile, setUnsavedAvatarImageFile] = useState(null);
+    const [galleryImageFiles, setGalleryImageFiles] = useState([]);
+    const [unsavedGalleryImageFiles, setUnsavedGalleryImageFiles] = useState([]);
     const { params } = useRouteMatch();
     const history = useHistory();
     const { authenticatedRequest } = useAuth();
@@ -27,13 +31,13 @@ export default function DoctorsOfficeEditor() {
     useEffect(() => {
         setLoading(true);
         setError(null);
-        const officeId = params.officeId;
         authenticatedRequest('GET', generatePath('/doctors-offices/:officeId', params))
             .then((fetchedOffice) => {
                 setOffice(fetchedOffice);
                 setLoading(false);
             })
             .catch(errorHandler);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     function handleChange(value) {
@@ -46,33 +50,94 @@ export default function DoctorsOfficeEditor() {
         setOffice(newOffice);
     }
 
+    function handleAvatarChange(e) {
+        if (e.target.files.length > 0) {
+            setAvatarImageFile(e.target.files[0]);
+            setUnsavedAvatarImageFile(e.target.files[0]);
+        } else {
+            setAvatarImageFile(null);
+            setUnsavedAvatarImageFile(null);
+        }
+    }
+
+    function handleGalleryChange(e) {
+        if (e.target.files.length > 0) {
+            setGalleryImageFiles([...e.target.files]);
+            setUnsavedGalleryImageFiles([...e.target.files]);
+        } else {
+            setGalleryImageFiles([]);
+            setUnsavedGalleryImageFiles([]);
+        }
+    }
+
     function handleSubmit(e) {
         e.preventDefault();
         setSaving(true);
+        setError(null);
         const unsavedOffice = {};
         // Copy all changed properties from the office to the request body
         unsavedOfficeProps.forEach(prop => unsavedOffice[prop] = office[prop]);
-        authenticatedRequest('PUT', generatePath('/doctors-offices/:officeId', params), unsavedOffice)
-            .then((response) => {
-                unsavedOfficeProps.clear();
-                unsavedOfficeProps.add("name");
-                setSaving(false);
-                history.push(generatePath('/office/:officeId', params));
-            })
-            .catch((error) => {
-                console.error(error);
-                setSaving(false);
+        const uploads = [];
+        const officeUpload = authenticatedRequest('PUT', generatePath('/doctors-offices/:officeId', params), unsavedOffice)
+            .then(() => {
+                setUnsavedOfficeProps(new Set().add("name"));
+            });
+        uploads.push(officeUpload);
+
+        if (unsavedAvatarImageFile !== null) {
+            const body = new FormData();
+            body.append("file", unsavedAvatarImageFile);
+            const avatarUpload = authenticatedRequest('POST', generatePath('/doctors-offices/:officeId/upload-avatar', params), body)
+                .then(() => {
+                    setUnsavedAvatarImageFile(null);
+                });
+            uploads.push(avatarUpload);
+        } else {
+            uploads.push(Promise.resolve(0));
+        }
+
+        if (unsavedGalleryImageFiles.length > 0) {
+            const body = new FormData();
+            unsavedGalleryImageFiles.forEach(file => {
+                body.append("files", file);
+            });
+            const galleryUpload = authenticatedRequest('POST', generatePath('/doctors-offices/:officeId/upload-pictures', params), body)
+                .then(() => {
+                    setUnsavedGalleryImageFiles([]);
+                });
+            uploads.push(galleryUpload);
+        } else {
+            uploads.push(Promise.resolve(0));
+        }
+
+        Promise.allSettled(uploads)
+            .then(([officeResult, avatarResult, galleryResult]) => {
+                const errors = [];
+                if (officeResult.status === "rejected") {
+                    errors.push("The office's configuration could not be saved.");
+                }
+                if (avatarResult.status === "rejected") {
+                    errors.push("The profile picture could not be saved.");
+                }
+                if (galleryResult.status === "rejected") {
+                    errors.push("The gallery pictures could not be saved.");
+                }
+                if (errors.length > 0) {
+                    setError(errors.map((e, idx) => <p key={idx}>{e}</p>));
+                    setSaving(false);
+                } else {
+                    history.push(generatePath('/office/:officeId', params));
+                }
             });
     }
 
-    if (error) {
-        return <p>{error}</p>;
-    } else if (loading) {
+    if (loading) {
         return <LoadingSpinner />;
     } else {
         return (
             <form onSubmit={handleSubmit}>
                 <div id="office" className="flex flex-col lg:w-8/12 md:w-full mx-auto space-y-6 mb-40">
+                    {error}
                     <button className="w-full bg-green-400 text-lg text-white py-2"
                         type="submit"
                         disabled={saving}
@@ -123,8 +188,13 @@ export default function DoctorsOfficeEditor() {
                         <div id="sidebar-column" className="flex flex-col space-y-3 min-w-0 overflow-hidden" style={{ flex: 1 }}>
                             <div id="avatar" className="p-3 rounded border-2 border-gray-300">
                                 <label htmlFor="avatar-upload">Upload a new profile picture</label>
-                                <input name="avatar-upload" type="file" />
-                                <ImageList imageUrls={[office.avatarUrl]} />
+                                <input
+                                    name="avatar-upload"
+                                    type="file"
+                                    accept='image/jpeg,image/png'
+                                    onChange={handleAvatarChange}
+                                />
+                                <ImageList imageUrls={avatarImageFile ? [URL.createObjectURL(avatarImageFile)] : [office.avatarUrl]} />
                             </div>
                             <div id="opening-hours" className="p-3 rounded border-2 border-gray-300">
                                 <div id="opening-title" className="rounded border-2 border-gray-300 mb-3 text-center text-lg font-semibold bg-blue-200">
@@ -146,8 +216,13 @@ export default function DoctorsOfficeEditor() {
                             </div>
                             <div id="address" className="p-3 rounded border-2 border-gray-300">
                                 <label htmlFor="gallery-upload">Upload pictures for a gallery</label>
-                                <input name="gallery-upload" type="file" />
-                                <ImageList imageUrls={office.pictureUrls} />
+                                <input
+                                    name="gallery-upload"
+                                    type="file"
+                                    multiple accept='image/jpeg,image/png'
+                                    onChange={handleGalleryChange}
+                                />
+                                <ImageList imageUrls={galleryImageFiles.map(URL.createObjectURL).concat(office.pictureUrls)} />
                             </div>
                         </div>
                     </div>

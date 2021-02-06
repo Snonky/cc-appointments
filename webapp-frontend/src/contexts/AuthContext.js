@@ -37,13 +37,20 @@ export function AuthProvider({ children }) {
                         "Authorization": "Bearer " + idToken,
                     }
                     if (method !== 'GET') {
-                        headers["Content-type"] = "application/json";
+                        if (body instanceof FormData) {
+                            delete headers["Content-type"];
+                        } else {
+                            headers["Content-type"] = "application/json";
+                            if (typeof body !== "string") {
+                                body = JSON.stringify(body);
+                            }
+                        }
                     }
                     return fetch(process.env.REACT_APP_API_DOMAIN + url, {
                         method: method,
                         mode: 'cors',
                         headers: headers,
-                        body: JSON.stringify(body),
+                        body: body,
                     })
                         .then((response) => {
                             if (response.ok) {
@@ -53,7 +60,7 @@ export function AuthProvider({ children }) {
                                     return response.statusText;
                                 }
                             } else {
-                                throw Error(response.statusText);
+                                return response.json().then(error => { throw new Error(error.error) });
                             }
                         });
                 });
