@@ -20,7 +20,7 @@ export default function DoctorsOffice() {
         setLoading(false);
     }
 
-    useEffect(() => {
+    function fetchOffice() {
         setLoading(true);
         setError(null);
         authenticatedRequest('GET', generatePath('/doctors-offices/:officeId', params))
@@ -29,11 +29,20 @@ export default function DoctorsOffice() {
                 setLoading(false);
             })
             .catch(errorHandler);
+    }
+
+    function fetchAppointments() {
+        setError(null);
         authenticatedRequest('GET', generatePath('/doctors-offices/:officeId/appointments', params))
             .then((fetchedAppointments) => {
                 setAppointments(fetchedAppointments);
             })
             .catch(errorHandler);
+    }
+
+    useEffect(() => {
+        fetchOffice();
+        fetchAppointments();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -58,6 +67,7 @@ export default function DoctorsOffice() {
                             </div>
                             <AppointmentCalendar
                                 appointments={appointments}
+                                fetchAppointments={fetchAppointments}
                                 dayCount={office.dayCount}
                                 currentTime={new Date()}
                                 openingHours={office.openingHours}

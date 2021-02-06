@@ -2,23 +2,51 @@ import React, { useState } from 'react';
 import classNames from 'classnames';
 import { DateTime } from 'luxon';
 import AppointmentForm from './AppointmentForm';
+import { useAuth } from '../contexts/AuthContext';
+import { useRouteMatch, generatePath } from 'react-router-dom';
 
-export default function AppointmentCalendar({ appointments, currentTime, dayCount, timeSlot, openingHours, selectable }) {
+export default function AppointmentCalendar({ appointments, fetchAppointments, currentTime, dayCount, timeSlot, openingHours, selectable }) {
     const [selectedSlot, setSelectedSlot] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const { currentUser, authenticatedRequest } = useAuth();
+    const { params } = useRouteMatch();
 
-    function handleAppointmentSubmit(description, insurance) {
-        // Send appointment here
-        setSelectedSlot(null);
+    function handleAppointmentSubmit(e, description, insurance) {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        const newAppointment = {
+            userId: currentUser.uid,
+            dateTime: selectedSlot.toISO(),
+            typeOfInsurance: insurance,
+            reasonForVisit: description,
+
+        }
+        authenticatedRequest('POST', generatePath('/doctors-offices/:officeId/appointments', params), newAppointment)
+            .then(() => {
+                fetchAppointments();
+                setSelectedSlot(null);
+                setLoading(false);
+            })
+            .catch(error => {
+                setError("Could not make appointment.");
+                setLoading(false);
+            });
     }
 
 
     if (selectedSlot) {
         return (
-            <AppointmentForm
-                timeSlot={selectedSlot}
-                onSubmit={handleAppointmentSubmit}
-                onCancel={() => setSelectedSlot(null)}
-            />
+            <>
+                {error}
+                <AppointmentForm
+                    timeSlot={selectedSlot}
+                    onSubmit={handleAppointmentSubmit}
+                    onCancel={() => setSelectedSlot(null)}
+                    loading={loading}
+                />
+            </>
         );
     } else {
         return (

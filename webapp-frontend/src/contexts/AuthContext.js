@@ -27,6 +27,10 @@ export function AuthProvider({ children }) {
         return auth.signOut();
     }
 
+    /*
+     * Sends a http request with the currently logged in user's token as the bearer in the 'Authorization'
+     * header. If the body is anything but an instance of FormData it will be sent as stringified 'application/json'.
+     */
     function authenticatedRequest(method, url, body) {
         if (!currentUser) {
             return Promise.reject("Not authenticated");
@@ -38,6 +42,7 @@ export function AuthProvider({ children }) {
                     }
                     if (method !== 'GET') {
                         if (body instanceof FormData) {
+                            // The headers will be determined automatically by the FormData content
                             delete headers["Content-type"];
                         } else {
                             headers["Content-type"] = "application/json";
