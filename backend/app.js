@@ -10,9 +10,20 @@ var doctorsOfficesRouter = require('./routes/doctorsOffices');
 
 var app = express();
 
+function user(req, res, next) {
+    // After the request is authenticated the API gateway forwards the user info
+    const base64user = req.header('X-Apigateway-Api-Userinfo');
+    if (base64user) {
+        const user = JSON.parse(Buffer.from(base64user, 'base64').toString('ascii'));
+        // Add the parsed user info to the req so the API can use it
+        req.user = user;
+    }
+    next();
+}
+
 // FIXME change for production
-// app.use(cors({ origin: 'https://appointments.gq' }));
 app.use(cors({ origin: true }));
+app.use(user);
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
