@@ -330,7 +330,7 @@ paths:
           name: appointmentId
           required: true
           type: string
-  /users:
+  /user:
     get:
       operationId: user
       description: Returns a user's current role (doctor/patient)
