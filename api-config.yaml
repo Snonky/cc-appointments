@@ -29,6 +29,7 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
     post:
       operationId: createOffice
       description: Create a new doctor's office
@@ -40,6 +41,7 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
     options:
       security: []
       operationId: doctorsOfficeOptions
@@ -67,6 +69,7 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
     put:
       operationId: updateOffice
       description: Update a doctor's office object
@@ -85,6 +88,7 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
     delete:
       operationId: deleteOffice
       description: Delete a doctor's office object
@@ -101,6 +105,7 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
     options:
       security: []
       operationId: doctorsOfficesOptions
@@ -137,6 +142,7 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
     options:
       security: []
       operationId: avatarOptions
@@ -173,6 +179,7 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
     options:
       security: []
       operationId: galleryOptions
@@ -205,6 +212,7 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
     post:
       operationId: createAppointment
       description: Create a new appointment for this doctor's office
@@ -221,6 +229,7 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
     options:
       security: []
       operationId: doctorsOfficeAppointmentsOptions
@@ -257,6 +266,7 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
     put:
       operationId: updateAppointment
       description: Update an appointment of this doctor's office
@@ -279,6 +289,7 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
     delete:
       operationId: deleteAppointment
       description: Delete an appointment of this doctor's office
@@ -299,6 +310,7 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
     options:
       security: []
       operationId: doctorsOfficeAppointmentOptions
