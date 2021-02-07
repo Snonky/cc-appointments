@@ -1,0 +1,54 @@
+%----------------- KONFIGURATION -----------------%
+\pagestyle{empty} % enthalten keinerlei Kopf oder Fuß
+
+\newgeometry{left=4cm, right=2cm, top=1cm, bottom=1cm} % Mehr Platz oben und unten
+%----------------- HS RM Logo -----------------%
+\begin{figure}[t]
+	\flushright
+	\includegraphics[width=0.3\textwidth]{media/logo_hsrm.png}
+\end{figure}
+
+%----------------- INHALT -----------------%
+
+\begin{center}
+Hochschule RheinMain \\
+Fachbereich Informatik \\
+Studiengang Master of Science
+
+% Whitespace
+\vspace{30 pt}
+
+{\Large \textbf{Cloud-Dokumentation}} \\
+
+% Whitespace
+\vspace{50 pt}
+
+\begin{spacing}{1.2}
+\LARGE \textbf{\thetitle}
+\end{spacing}
+%
+\end{center}
+
+\vfill % Fills all the space, so the follwing stuff is floating down
+
+%
+\begin{small}
+\begin{tabular}[h]{p{4cm}l l}
+    vorgelegt von        & \textbf{Florian \textsc{Idel}} \\ 
+                         & \textbf{Vince \textsc{Nachname}} \\ 
+                         & \textbf{Simon \textsc{Nachname}} \\ 
+                         & \\
+    am                   & \thedate \\
+                         & \\
+    Professor:            & Prof. Dr. Phillip \textsc{Schaible}\\
+\end{tabular}
+%
+\vspace{15pt}
+%
+\vspace{15pt}
+%
+\begin{center}
+	\textcolor[gray]{0.4}{\tiny Kompiliert am \today ~um \currenttime ~- Erstellt mit \LaTeX}
+\end{center}
+%
+\restoregeometry % Normales definiertes Layout
