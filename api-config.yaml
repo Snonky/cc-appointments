@@ -16,6 +16,13 @@ securityDefinitions:
     x-google-jwks_uri: >-
       https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com
     x-google-audiences: cc-appointments-303011
+  service2service:
+    authorizationUrl: ''
+    flow: implicit
+    type: oauth2
+    x-google-issuer: 'appointments-service2service@cc-appointments-303011.iam.gserviceaccount.com'
+    x-google-jwks_uri: >-
+      https://www.googleapis.com/robot/v1/metadata/x509/appointments-service2service@cc-appointments-303011.iam.gserviceaccount.com
 security:
   - firebase: []
 paths:
@@ -347,6 +354,8 @@ paths:
       x-google-backend:
         address: 'https://user-mapping-api-vdbus3btaa-ey.a.run.app'
         path_translation: APPEND_PATH_TO_ADDRESS
+      security:
+        - service2service: []
     put:
       operationId: updateUser
       description: Sets a user's current role (doctor/patient)
@@ -369,6 +378,8 @@ paths:
       x-google-backend:
         address: 'https://user-mapping-api-vdbus3btaa-ey.a.run.app'
         path_translation: APPEND_PATH_TO_ADDRESS
+      security:
+        - service2service: []
     delete:
       operationId: deleteUser
       description: >-
@@ -387,6 +398,8 @@ paths:
       x-google-backend:
         address: 'https://user-mapping-api-vdbus3btaa-ey.a.run.app'
         path_translation: APPEND_PATH_TO_ADDRESS
+      security:
+        - service2service: []
     options:
       security: []
       operationId: userOptions
