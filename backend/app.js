@@ -105,7 +105,12 @@ function user(req, res, next) {
             };
             const userReq = https.request(options, userRes => {
                 userRes.on('data', d => {
-                    const userRole = JSON.parse(d);
+                    let userRole = null;
+                    try {
+                        userRole = JSON.parse(d);
+                    } catch (error) {
+                        console.error("The response from the  User API could not be read. Is the request authenticated?")
+                    }
                     if (userRole?.result?.length) {
                         user.isDoctor = userRole['result'][0].isDoctor;
                     } else {
