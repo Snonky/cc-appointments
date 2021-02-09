@@ -101,10 +101,9 @@ const createPoolAndEnsureSchema = async () =>
 
 app.get('/user', async (req, res) => {
     pool = pool || (await createPoolAndEnsureSchema());
-    var sql = "SELECT * FROM userList WHERE "
+    var sql = "SELECT * FROM userList WHERE uid=?"
     if(req.query.uid) {
-        sql = sql + "uid='" + req.query.uid + "';"
-        pool.query(sql, function (err, rows, fields) {
+        pool.query(sql, [req.query.uid ], function (err, rows, fields) {
             if (err) return res.status(400).send({ success: "false", message: "Failed to connect to DB", });
             return res.status(201).send({ 
                 success: "true", result: rows,
@@ -117,15 +116,14 @@ app.get('/user', async (req, res) => {
 
 app.put("/user", async (req, res) => { 
     pool = pool || (await createPoolAndEnsureSchema());
-    var sql = "INSERT INTO userList VALUES ('"
+    var sql = "INSERT INTO userList VALUES (? , ?)"
     if (req.query.uid) {
         sql = sql + req.query.uid
+        isDoctor = 0
         if (req.query.isDoctor) {
-            sql = sql + "', '" + req.query.isDoctor + "');"
-        } else {
-            sql = sql + "', '" + 0 + "');"
+            isDoctor = req.query.isDoctor
         }
-        pool.query(sql, function (err, rows, fields) {
+        pool.query(sql, [req.query.uid, isDoctor], function (err, rows, fields) {
             if (err) return res.status(400).send({ success: "false", message: "Failed to connect to DB", });
             return res.status(201).send({ 
                 success: "true", message: "user added successfully"
@@ -138,11 +136,9 @@ app.put("/user", async (req, res) => {
 
 app.delete('/user', async (req, res) => {
     pool = pool || (await createPoolAndEnsureSchema());
-    var sql = "DELETE FROM userList WHERE uid='"
-    console.log(req.query)
+    var sql = "DELETE FROM userList WHERE uid=?"
     if (req.query.uid) { 
-        sql = sql + req.query.uid + "';"
-        pool.query(sql, function (err, rows, fields) {
+        pool.query(sql, [req.query.uid], function (err, rows, fields) {
             if (err) return res.status(400).send({ success: "false", message: "Failed to connect to DB", });
             return res.status(201).send({ 
                 success: "true", message: "user removed successfully"
