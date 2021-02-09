@@ -22,8 +22,18 @@ Ja also darum gehts\dots}
 
 \subsection*{Skalierung}
 \blindtext
+Vertikale Skalierung, da:
+ - Einfache Nutzerdaten
+ - Datenstamm gering
+Wichtig:
+ - Zugriffsgeschwindigkeit, daher SQL
+
+
 
 \subsection*{Kosten}
+High availabilty wird nicht benötigt, da auf der Datenbank gespeichert wird, ob es sich bei einem Nutzer um einen Arzt handelt.
+Falls ein User ein Arzt ist, so kann er seine eigene Praxis Seite erstellen.
+Somit verliert die Applikation nur die Fuktionalität der Praxeneröffnung.
 \sblindtext
 
 
@@ -59,11 +69,10 @@ Ja also darum gehts\dots}
 
 \section{Artifact Registry}
 \blindtext
-
-\subsection*{Skalierung}
-\blindtext
-
 \subsection*{Kosten}
+Bei der Artifact Registry entstehen keine Kosten, da das 
+UserAPI Image kleiner als 0.5GB ist und somit die Google 
+Cloud Kostenschwelle nicht überschreitet.
 \sblindtext
 
 
