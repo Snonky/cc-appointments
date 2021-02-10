@@ -1,5 +1,7 @@
-import express from 'express';
-import mysql from 'promise-mysql';
+var express = require('express');
+var mysql = require('promise-mysql');
+var gw_api = require('./gateway_auth.js')
+var https = require('https');
 const app = express();
 
 app.get('/', (req, res) => {
@@ -13,6 +15,7 @@ res.send('API Usage: \n get /user')
 const createTcpPool = async config => {
 // Extract host and port from socket address
 const dbSocketAddr = process.env.DB_HOST.split(':');
+const gatewayURL = process.env.GW_URL;
 
 // Establish a connection to the database
 return await mysql.createPool({
@@ -116,7 +119,7 @@ app.get('/user', async (req, res) => {
 
 app.put("/user", async (req, res) => { 
     pool = pool || (await createPoolAndEnsureSchema());
-    var sql = "INSERT INTO userList VALUES (? , ?)"
+    var sql = "REPLACE INTO userList VALUES (? , ?)"
     if (req.query.uid) {
         sql = sql + req.query.uid
         isDoctor = 0
@@ -125,6 +128,7 @@ app.put("/user", async (req, res) => {
         }
         pool.query(sql, [req.query.uid, isDoctor], function (err, rows, fields) {
             if (err) return res.status(400).send({ success: "false", message: "Failed to connect to DB", });
+            send_default_office(req.query.uid);
             return res.status(201).send({ 
                 success: "true", message: "user added successfully"
             });
@@ -148,6 +152,42 @@ app.delete('/user', async (req, res) => {
         return res.status(400).send({ success: "false", message: "uid is required", }); 
     }
 });
+
+function send_default_office(uid) {
+    //post an gatewayURL/doctors-offices/{officeId}
+    //doctor office als json
+    //owner id und name vom office rein
+    p_body = JSON.stringify({
+        name: "Lorem Ipsum Doctor Office",
+        ownerId: uid
+    });
+    gw_api.getJwt().then((token) => {
+        const options = {
+            method: 'POST',
+            hostname: gatewayURL,
+            path: `/doctorOffice`,
+            port: 443,
+            headers: {
+                "Authorization": "Bearer " + token,
+                'Content-Type': 'application/json',
+                'Content-Length': data.length
+            },
+        };
+        const dReq = https.request(options, dRes => {
+            dRes.on('data', d => {
+                let resp = null;
+                try {
+                    resp = JSON.parse(d);
+                    console.log(resp)
+                } catch (error) {
+                    console.error("The response from the  User API could not be read. Is the request authenticated?")
+                }
+            });
+        });
+        dReq.write(data)
+        dReq.end();
+    });
+};
 
 
 // Set up a variable to hold our connection pool. It would be safe to
