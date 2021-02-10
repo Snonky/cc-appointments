@@ -75,6 +75,8 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             setCurrentUser(user);
+            // Exposed function to easily get a JWT for development purposes
+            window.jwt = () => { user.getIdToken(true).then(console.log) };
             setLoading(false);
         });
         return unsubscribe;

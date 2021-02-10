@@ -168,8 +168,8 @@ export default function DoctorsOfficeEditor() {
                                     <p>Appointment Calendar Settings</p>
                                 </div>
                                 <AppointentCalendarEditor
-                                    dayCount={office.dayCount}
-                                    timeSlot={office.timeSlot}
+                                    dayCount={office.dayCount || 5}
+                                    timeSlot={office.timeSlot || 30}
                                     onChange={handleChange}
                                 />
                                 <div id="calender-preview-title" className="rounded border-2 border-gray-300 my-3 text-center text-lg font-semibold bg-blue-200">
@@ -177,10 +177,10 @@ export default function DoctorsOfficeEditor() {
                                 </div>
                                 <AppointmentCalendar
                                     appointments={[]}
-                                    dayCount={office.dayCount}
+                                    dayCount={office.dayCount || 5}
                                     currentTime={new Date()}
-                                    openingHours={office.openingHours}
-                                    timeSlot={office.timeSlot}
+                                    openingHours={office.openingHours || []}
+                                    timeSlot={office.timeSlot ||30}
                                     selectable={false}
                                 />
                             </div>
@@ -201,7 +201,7 @@ export default function DoctorsOfficeEditor() {
                                     <p>Opening Hours</p>
                                 </div>
                                 <OpeningHoursEditor
-                                    openingHours={office.openingHours}
+                                    openingHours={office.openingHours || []}
                                     onChange={handleChange}
                                 />
                             </div>
@@ -210,7 +210,7 @@ export default function DoctorsOfficeEditor() {
                                     <p>Address</p>
                                 </div>
                                 <AddressEditor
-                                    address={office.address}
+                                    address={office.address || ""}
                                     onChange={handleChange}
                                 />
                             </div>

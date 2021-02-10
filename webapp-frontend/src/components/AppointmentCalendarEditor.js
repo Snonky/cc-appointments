@@ -23,7 +23,7 @@ export default function AppointentCalendarEditor({ timeSlot, dayCount, onChange 
                 <input
                     name="time-slot"
                     type="number"
-                    value={timeSlot || 30}
+                    value={timeSlot}
                     min={15}
                     max={240}
                     step={15}
@@ -36,7 +36,7 @@ export default function AppointentCalendarEditor({ timeSlot, dayCount, onChange 
                 <input
                     name="day-count"
                     type="number"
-                    value={dayCount || 5}
+                    value={dayCount}
                     min={1}
                     max={12}
                     onChange={handleDayCountChange}

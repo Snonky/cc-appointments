@@ -4,6 +4,7 @@ import { Route, Switch, useHistory, generatePath } from 'react-router-dom';
 import SearchResult from './SearchResult';
 import DoctorsOffice from './DoctorsOffice';
 import DoctorsOfficeEditor from './DoctorsOfficeEditor';
+import UserAppointmentList from './UserAppointmentList';
 
 const Homepage = () => {
     const [error, setError] = useState(null);
@@ -81,6 +82,10 @@ const Homepage = () => {
                     <Route
                         path={"/office/:officeId"}
                         component={DoctorsOffice}
+                    />
+                    <Route
+                        path={"/profile"}
+                        component={UserAppointmentList}
                     />
                     <Route
                         path={"/search/:searchTerms"}

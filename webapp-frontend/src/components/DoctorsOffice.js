@@ -66,12 +66,12 @@ export default function DoctorsOffice() {
                                 <p>Appointments</p>
                             </div>
                             <AppointmentCalendar
-                                appointments={appointments}
+                                appointments={appointments || []}
                                 fetchAppointments={fetchAppointments}
-                                dayCount={office.dayCount}
+                                dayCount={office.dayCount || 5}
                                 currentTime={new Date()}
-                                openingHours={office.openingHours}
-                                timeSlot={office.timeSlot}
+                                openingHours={office.openingHours || []}
+                                timeSlot={office.timeSlot || 30}
                                 selectable={true}
                             />
                         </div>
@@ -84,16 +84,16 @@ export default function DoctorsOffice() {
                             <div id="opening-title" className="rounded border-2 border-gray-300 mb-3 text-center text-lg font-semibold bg-blue-200">
                                 <p>Opening Hours</p>
                             </div>
-                            <OpeningHours openingHours={office.openingHours} />
+                            <OpeningHours openingHours={office.openingHours || []} />
                         </div>
                         <div id="address" className="p-3 rounded border-2 border-gray-300">
                             <div id="address-title" className="rounded border-2 border-gray-300 mb-3 text-center text-lg font-semibold bg-blue-200">
                                 <p>Address</p>
                             </div>
-                            {office.address.split('\n').map((line, idx) => <p key={idx}>{line}</p>)}
+                            {office.address?.split('\n').map((line, idx) => <p key={idx}>{line}</p>)}
                         </div>
                         <div id="address" className="p-3 rounded border-2 border-gray-300">
-                            <ImageList imageUrls={office.pictureUrls} />
+                            <ImageList imageUrls={office.pictureUrls || []} />
                         </div>
                     </div>
                 </div>

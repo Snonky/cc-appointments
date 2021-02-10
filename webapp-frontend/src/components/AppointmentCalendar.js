@@ -68,8 +68,6 @@ export default function AppointmentCalendar({ appointments, fetchAppointments, c
 export function AppointmentSelector({ appointments, currentTime, dayCount, timeSlot, openingHours, onSlotSelect, selectable }) {
     let date = DateTime.fromJSDate(currentTime).set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
     const today = date;
-    timeSlot = timeSlot || 30;
-    dayCount = dayCount || 5;
     let nDays = 0;
     const calendarDays = [];
     // Add days (columns) to the calendar until a maximum of 21
