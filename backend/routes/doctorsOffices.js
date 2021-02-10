@@ -180,7 +180,7 @@ router.get('/:id/appointments', async (req, res) => {
     const snapshot = await docsRef.get();
     const results = [];
     snapshot.forEach(doc => {
-        results.push({ 'id': doc.id, ...doc.data() });
+        results.push({ 'id': doc.id, 'dateTime': doc.data().dateTime });
     });
     res.send(results);
 });
