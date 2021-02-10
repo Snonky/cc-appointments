@@ -20,7 +20,8 @@ securityDefinitions:
     authorizationUrl: ''
     flow: implicit
     type: oauth2
-    x-google-issuer: 'appointments-service2service@cc-appointments-303011.iam.gserviceaccount.com'
+    x-google-issuer: >-
+      appointments-service2service@cc-appointments-303011.iam.gserviceaccount.com
     x-google-jwks_uri: >-
       https://www.googleapis.com/robot/v1/metadata/x509/appointments-service2service@cc-appointments-303011.iam.gserviceaccount.com
 security:
@@ -36,7 +37,8 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
     post:
       operationId: createOffice
       description: Create a new doctor's office
@@ -48,7 +50,8 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
     options:
       security: []
       operationId: doctorsOfficeOptions
@@ -76,7 +79,8 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
     put:
       operationId: updateOffice
       description: Update a doctor's office object
@@ -95,7 +99,8 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
     delete:
       operationId: deleteOffice
       description: Delete a doctor's office object
@@ -112,7 +117,8 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
     options:
       security: []
       operationId: doctorsOfficesOptions
@@ -149,7 +155,8 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
     options:
       security: []
       operationId: avatarOptions
@@ -186,7 +193,8 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
     options:
       security: []
       operationId: galleryOptions
@@ -219,7 +227,8 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
     post:
       operationId: createAppointment
       description: Create a new appointment for this doctor's office
@@ -236,7 +245,8 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
     options:
       security: []
       operationId: doctorsOfficeAppointmentsOptions
@@ -273,7 +283,8 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
     put:
       operationId: updateAppointment
       description: Update an appointment of this doctor's office
@@ -296,7 +307,8 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
     delete:
       operationId: deleteAppointment
       description: Delete an appointment of this doctor's office
@@ -317,7 +329,8 @@ paths:
       x-google-backend:
         address: 'https://cc-appointments-303011.ey.r.appspot.com'
         path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: '750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com'
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
     options:
       security: []
       operationId: doctorsOfficeAppointmentOptions
@@ -335,6 +348,84 @@ paths:
           type: string
         - in: path
           name: appointmentId
+          required: true
+          type: string
+  '/user-appointments/{userId}':
+    get:
+      operationId: userAppointmentList
+      description: Returns all appointments of one user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: User with this ID not found
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    post:
+      operationId: addToUserAppointmentList
+      description: Add appointment to user appointment list
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: User with this ID not found
+        '422':
+          description: The userAppointment object is not valid
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+      security:
+        - service2service: []
+    delete:
+      operationId: delFromUserAppointmentList
+      description: Remove appointment from user appointment list
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: User with this ID not found
+        '422':
+          description: The userAppointment object is not valid
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+      security:
+        - service2service: []
+    options:
+      security: []
+      operationId: userAppointmentsOptions
+      description: Options method
+      responses:
+        '200':
+          description: Success.
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+      parameters:
+        - in: path
+          name: userId
           required: true
           type: string
   /user:
