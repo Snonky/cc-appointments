@@ -217,7 +217,7 @@ router.put('/:id/appointments/:appointmentId', async (req, res) => {
 router.delete('/:id/appointments/:appointmentId', async (req, res) => {
     const docRef = docsOffices.doc(req.params.id).collection('appointments').doc(req.params.appointmentId);
     const deleteRes = await docRef.delete();
-    res.send({ 'id': req.params.id });
+    res.send({ 'id': req.params.appointmentId });
 });
 
 module.exports = router;
