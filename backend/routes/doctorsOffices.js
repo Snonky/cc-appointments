@@ -4,6 +4,7 @@ var router = express.Router();
 const { Firestore } = require('@google-cloud/firestore');
 const firestore = new Firestore();
 const docsOffices = firestore.collection('doctors-offices');
+const userAppointments = firestore.collection('user-appointments');
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -96,12 +97,10 @@ router.post('/:id/upload-avatar', multer.single('file'), async (req, res) => {
     const blob = bucket.file(fileName);
     const blobStream = blob.createWriteStream();
     blobStream.on('error', err => {
-        // res.status(400).json({
-        // 	error: 'Error uploading file',
-        // 	message: err
-        // });
-        // return;
-        console.error(err);
+        res.status(400).json({
+            error: 'Error uploading file',
+        });
+        return;
     });
     blobStream.on('finish', async () => {
         const publicUrl = `https://storage.googleapis.com/cc-appointments-images/${blob.name}`;
@@ -209,6 +208,18 @@ router.post('/:id/appointments', async (req, res) => {
     }
 
     const addRes = await docsOffices.doc(req.params.id).collection('appointments').add(req.body);
+    const docRef = userAppointments.doc(req.user.user_id);
+    const document = await docRef.get();
+    if (!document.exists) {
+        await docRef.set({ 'appointments': [] });
+    }
+    await docRef.update({
+        appointments: Firestore.FieldValue.arrayUnion({
+            'appointmentId': addRes.id,
+            'doctorsOfficeId': req.params.id
+        })
+    });
+
     res.send({ 'id': addRes.id, ...req.body });
 });
 
@@ -226,6 +237,14 @@ router.put('/:id/appointments/:appointmentId', async (req, res) => {
 router.delete('/:id/appointments/:appointmentId', async (req, res) => {
     const docRef = docsOffices.doc(req.params.id).collection('appointments').doc(req.params.appointmentId);
     const deleteRes = await docRef.delete();
+    const userDocRef = userAppointments.doc(req.user.user_id);
+    await userDocRef.update({
+        appointments: Firestore.FieldValue.arrayRemove({
+            'appointmentId': req.params.appointmentId,
+            'doctorsOfficeId': req.params.id
+        })
+    });
+
     res.send({ 'id': req.params.appointmentId });
 });
 
