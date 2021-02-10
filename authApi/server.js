@@ -11,11 +11,12 @@ res.send('API Usage: \n get /user')
 // https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/master/cloud-sql/mysql/mysql/server.js
 
 
+const gatewayURL = process.env.GW_URL;
+
 // [START cloud_sql_mysql_mysql_create_tcp]
 const createTcpPool = async config => {
 // Extract host and port from socket address
 const dbSocketAddr = process.env.DB_HOST.split(':');
-const gatewayURL = process.env.GW_URL;
 
 // Establish a connection to the database
 return await mysql.createPool({
@@ -107,7 +108,7 @@ app.get('/user', async (req, res) => {
     var sql = "SELECT * FROM userList WHERE uid=?"
     if(req.query.uid) {
         pool.query(sql, [req.query.uid ], function (err, rows, fields) {
-            if (err) return res.status(400).send({ success: "false", message: "Failed to connect to DB", });
+            if (err) return res.status(400).send({ success: "false", message: `Database error: ${ err.message }`, });
             return res.status(201).send({ 
                 success: "true", result: rows,
             });
@@ -121,18 +122,19 @@ app.put("/user", async (req, res) => {
     pool = pool || (await createPoolAndEnsureSchema());
     var sql = "REPLACE INTO userList VALUES (? , ?)"
     if (req.query.uid) {
-        sql = sql + req.query.uid
         isDoctor = 0
         if (req.query.isDoctor) {
             isDoctor = req.query.isDoctor
         }
         pool.query(sql, [req.query.uid, isDoctor], function (err, rows, fields) {
-            if (err) return res.status(400).send({ success: "false", message: "Failed to connect to DB", });
-            send_default_office(req.query.uid);
+            if (err) return res.status(400).send({ success: "false", message: `Database error: ${ err.message }`, });
             return res.status(201).send({ 
                 success: "true", message: "user added successfully"
             });
         });
+        if (isDoctor) {
+            send_default_office(req.query.uid);a
+        }
     } else {
         return res.status(400).send({ success: "false", message: "uid is required", }); 
     }
@@ -143,7 +145,7 @@ app.delete('/user', async (req, res) => {
     var sql = "DELETE FROM userList WHERE uid=?"
     if (req.query.uid) { 
         pool.query(sql, [req.query.uid], function (err, rows, fields) {
-            if (err) return res.status(400).send({ success: "false", message: "Failed to connect to DB", });
+            if (err) return res.status(400).send({ success: "false", message: `Database error: ${ err.message }`, });
             return res.status(201).send({ 
                 success: "true", message: "user removed successfully"
             });
@@ -157,28 +159,27 @@ function send_default_office(uid) {
     //post an gatewayURL/doctors-offices/{officeId}
     //doctor office als json
     //owner id und name vom office rein
-    p_body = JSON.stringify({
+    data = JSON.stringify({
         name: "Lorem Ipsum Doctor Office",
         ownerId: uid
     });
     gw_api.getJwt().then((token) => {
         const options = {
-            method: 'POST',
+            method: "POST",
             hostname: gatewayURL,
-            path: `/doctorOffice`,
+            path: "/doctors-offices",
             port: 443,
             headers: {
                 "Authorization": "Bearer " + token,
-                'Content-Type': 'application/json',
-                'Content-Length': data.length
+                "Content-Type": "application/json",
+                "Content-Length": data.length
             },
         };
-        const dReq = https.request(options, dRes => {
+        const dReq =  https.request(options, dRes => {
             dRes.on('data', d => {
                 let resp = null;
                 try {
                     resp = JSON.parse(d);
-                    console.log(resp)
                 } catch (error) {
                     console.error("The response from the  User API could not be read. Is the request authenticated?")
                 }
