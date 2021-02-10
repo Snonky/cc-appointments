@@ -7,6 +7,10 @@ const doctorsOfficeSchema = {
     type: "object",
     properties: {
         name: { type: "string" },
+        ownerId: {
+            type: "string",
+			pattern: "^[a-zA-Z0-9]+$"
+		},
         avatarUrl: {
             type: "string",
             format: "uri"
@@ -56,7 +60,7 @@ const doctorsOfficeSchema = {
             enum: [15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240],
         },
     },
-    required: ["name"],
+    required: [],
     additionalProperties: false,
 };
 
