@@ -43,25 +43,26 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    if (validateDoctorsOffice(req.body)) {
-        const addRes = await docsOffices.add(req.body);
-        res.send({ 'id': addRes.id, ...req.body });
-    } else {
+    if (!validateDoctorsOffice(req.body)) {
         res.status(422).json({ error: 'Request is not valid' });
+        return;
     }
+
+    const addRes = await docsOffices.add(req.body);
+    res.send({ 'id': addRes.id, ...req.body });
 });
 
 router.put('/:id', async (req, res) => {
-    const docRef = docsOffices.doc(req.params.id);
-    if (validateDoctorsOffice(req.body)) {
-        try {
-            const updateRes = await docRef.update(req.body);
-            res.send(req.body);
-        } catch (error) {
-            res.status(404).json({ error: 'Doctors Office not found' })
-        }
-    } else {
+    if (!validateDoctorsOffice(req.body)) {
         res.status(422).json({ error: 'Request is not valid' });
+        return;
+    }
+    const docRef = docsOffices.doc(req.params.id);
+    try {
+        const updateRes = await docRef.update(req.body);
+        res.send(req.body);
+    } catch (error) {
+        res.status(404).json({ error: 'Doctors Office not found' })
     }
 });
 
@@ -196,22 +197,30 @@ router.get('/:id/appointments/:appointmentId', async (req, res) => {
 });
 
 router.post('/:id/appointments', async (req, res) => {
-    if (validateAppointment(req.body)) {
-        const addRes = await docsOffices.doc(req.params.id).collection('appointments').add(req.body);
-        res.send({ 'id': addRes.id, ...req.body });
-    } else {
+    if (!validateAppointment(req.body)) {
         res.status(422).json({ error: 'Request is not valid' });
+        return;
     }
+
+    const snapshot = await docsOffices.doc(req.params.id).collection('appointments').where('dateTime', '==', req.body.dateTime).get();
+    if (!snapshot.empty) {
+        res.status(422).json({ error: 'Appointment already booked' });
+        return;
+    }
+
+    const addRes = await docsOffices.doc(req.params.id).collection('appointments').add(req.body);
+    res.send({ 'id': addRes.id, ...req.body });
 });
 
 router.put('/:id/appointments/:appointmentId', async (req, res) => {
-    if (validateAppointment(req.body)) {
-        const docRef = docsOffices.doc(req.params.id).collection('appointments').doc(req.params.appointmentId);
-        const updateRes = await docRef.update(req.body);
-        res.send(req.body);
-    } else {
+    if (!validateAppointment(req.body)) {
         res.status(422).json({ error: 'Request is not valid' });
+        return;
     }
+
+    const docRef = docsOffices.doc(req.params.id).collection('appointments').doc(req.params.appointmentId);
+    const updateRes = await docRef.update(req.body);
+    res.send(req.body);
 });
 
 router.delete('/:id/appointments/:appointmentId', async (req, res) => {
