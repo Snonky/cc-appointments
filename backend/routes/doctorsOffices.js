@@ -223,20 +223,15 @@ router.post('/:id/appointments', async (req, res) => {
     res.send({ 'id': addRes.id, ...req.body });
 });
 
-router.put('/:id/appointments/:appointmentId', async (req, res) => {
-    if (!validateAppointment(req.body)) {
-        res.status(422).json({ error: 'Request is not valid' });
-        return;
-    }
-
-    const docRef = docsOffices.doc(req.params.id).collection('appointments').doc(req.params.appointmentId);
-    const updateRes = await docRef.update(req.body);
-    res.send(req.body);
-});
-
 router.delete('/:id/appointments/:appointmentId', async (req, res) => {
     const docRef = docsOffices.doc(req.params.id).collection('appointments').doc(req.params.appointmentId);
-    const deleteRes = await docRef.delete();
+    const ownerId = await docsOffices.doc(req.params.id).get().data().ownerId;
+    const appointmentUserId = await docRef.get().data().userId;
+    if (req.user.user_id !== appointmentUserId || req.user.user_id !== ownerId) {
+        res.status(401).json({ error: 'Not authorized to delete this appointment' });
+        return;
+    }
+    await docRef.delete();
     const userDocRef = userAppointments.doc(req.user.user_id);
     await userDocRef.update({
         appointments: Firestore.FieldValue.arrayRemove({
