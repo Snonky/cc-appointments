@@ -58,16 +58,30 @@ router.put('/:id', async (req, res) => {
         return;
     }
     const docRef = docsOffices.doc(req.params.id);
-    try {
-        await docRef.update(req.body);
-        res.send(req.body);
-    } catch (error) {
+    const document = await docRef.get();
+    if (!document.exists) {
         res.status(404).json({ error: 'Doctors Office not found' });
+        return;
     }
+    if (req.user.user_id !== document.data().ownerId) {
+        res.status(404).json({ error: 'Not authorized to change this doctors office' });
+        return;
+    }
+    await docRef.update(req.body);
+    res.send(req.body);
 });
 
 router.delete('/:id', async (req, res) => {
     const docRef = docsOffices.doc(req.params.id);
+    const document = await docRef.get();
+    if (!document.exists) {
+        res.status(404).json({ error: 'Doctors Office not found' });
+        return;
+    }
+    if (req.user.user_id !== document.data().ownerId) {
+        res.status(404).json({ error: 'Not authorized to delete this doctors office' });
+        return;
+    }
     await docRef.delete();
     res.send({ id: req.params.id });
 });
@@ -75,6 +89,16 @@ router.delete('/:id', async (req, res) => {
 // image upload
 
 router.post('/:id/upload-avatar', multer.single('file'), async (req, res) => {
+    const docRef = docsOffices.doc(req.params.id);
+    const document = await docRef.get();
+    if (!document.exists) {
+        res.status(404).json({ error: 'Doctors Office not found' });
+        return;
+    }
+    if (req.user.user_id !== document.data().ownerId) {
+        res.status(404).json({ error: 'Not authorized to upload images to this doctors office' });
+        return;
+    }
     if (!req.file) {
         res.status(400).send({ error: 'No file uploaded' });
         return;
@@ -82,12 +106,6 @@ router.post('/:id/upload-avatar', multer.single('file'), async (req, res) => {
     const filetypes = /jpeg|jpg|png/;
     if (!filetypes.test(req.file.mimetype)) {
         res.status(422).send({ error: 'Wrong filetype uploaded (only jpg, jpeg or png are supported)' });
-        return;
-    }
-    const docRef = docsOffices.doc(req.params.id);
-    const document = await docRef.get();
-    if (!document.exists) {
-        res.status(404).json({ error: 'Doctors Office not found' });
         return;
     }
 
@@ -111,15 +129,18 @@ router.post('/:id/upload-avatar', multer.single('file'), async (req, res) => {
 });
 
 router.post('/:id/upload-pictures', multer.array('files'), async (req, res) => {
-    if (req.files.length === 0) {
-        res.status(400).send('No files uploaded');
-        return;
-    }
-
     const docRef = docsOffices.doc(req.params.id);
     const document = await docRef.get();
     if (!document.exists) {
         res.status(404).json({ error: 'Doctors Office not found' });
+        return;
+    }
+    if (req.user.user_id !== document.data().ownerId) {
+        res.status(404).json({ error: 'Not authorized to upload images to this doctors office' });
+        return;
+    }
+    if (req.files.length === 0) {
+        res.status(400).send('No files uploaded');
         return;
     }
     if (!('pictureUrls' in document)) {
@@ -185,9 +206,15 @@ router.get('/:id/appointments/:appointmentId', async (req, res) => {
     const document = await docRef.get();
     if (!document.exists) {
         res.status(404).json({ error: 'Appointment not found' });
-    } else {
-        res.send(document.data());
+        return;
     }
+    const ownerId = await docsOffices.doc(req.params.id).get().data().ownerId;
+    const appointmentUserId = document.data().userId;
+    if (req.user.user_id !== appointmentUserId || req.user.user_id !== ownerId) {
+        res.status(401).json({ error: 'Not authorized to get this appointment' });
+        return;
+    }
+    res.send(document.data());
 });
 
 router.post('/:id/appointments', async (req, res) => {
