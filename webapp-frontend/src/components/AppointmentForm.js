@@ -21,8 +21,8 @@ export default function AppointmentForm({ timeSlot, onSubmit, onCancel, loading 
                     <label htmlFor="desc">Describe why you need to come in</label>
                     <textarea name="description" onChange={handleDescChange} className="w-full shadow-inner" maxLength="250" rows="3" />
                     <p className={`text-sm ${patientDescription.length === 250 ? 'text-red-500' : 'text-gray-500'}`}>{patientDescription.length}/250</p>
-                    <select name="insurance" onChange={handleInsuranceChange} className="w-full mt-4" required>
-                        <option value="" selected disabled hidden>Please set your insurance type</option>
+                    <select name="insurance" onChange={handleInsuranceChange} className="w-full mt-4" defaultValue={""} required>
+                        <option value="" disabled hidden>Please set your insurance type</option>
                         <option value="public">Public</option>
                         <option value="private">Private</option>
                     </select>

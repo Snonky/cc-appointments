@@ -4,6 +4,7 @@ import { DateTime } from 'luxon';
 import AppointmentForm from './AppointmentForm';
 import { useAuth } from '../contexts/AuthContext';
 import { useRouteMatch, generatePath } from 'react-router-dom';
+import ErrorMessage from './ErrorMessage';
 
 export default function AppointmentCalendar({ appointments, fetchAppointments, currentTime, dayCount, timeSlot, openingHours, selectable }) {
     const [selectedSlot, setSelectedSlot] = useState(null);
@@ -30,16 +31,20 @@ export default function AppointmentCalendar({ appointments, fetchAppointments, c
                 setLoading(false);
             })
             .catch(error => {
-                setError("Could not make appointment.");
+                fetchAppointments();
+                setError(error.toString());
                 setLoading(false);
             });
     }
 
-
     if (selectedSlot) {
         return (
             <>
-                {error}
+                {
+                    error ?
+                        <ErrorMessage message={error}/>
+                        : null
+                }
                 <AppointmentForm
                     timeSlot={selectedSlot}
                     onSubmit={handleAppointmentSubmit}

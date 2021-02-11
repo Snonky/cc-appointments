@@ -51,8 +51,6 @@ export default function DoctorsOffice() {
     } else if (loading) {
         return <LoadingSpinner />
     } else {
-        console.log(office.ownerId)
-        console.log(currentUser.uid)
         return (
             <div id="office" className="flex flex-col lg:w-8/12 md:w-full mx-auto space-y-6 mb-40">
                 <div id="title" className="relative flex flex-col justify-center h-20 bg-blue-200 text-center text-2xl rounded border-2 border-gray-400">
@@ -66,7 +64,7 @@ export default function DoctorsOffice() {
                                     focusable={"false"}
                                     width={"1em"}
                                     height={"1em"}
-                                    style={{ "-ms-transform": "rotate(360deg)", "-webkit-transform": "rotate(360deg)", "transform": "rotate(360deg)", "preserveAspectRatio": "xMidYMid meet", "viewBox": "0 0 24 24" }}>
+                                    style={{ "msTransform": "rotate(360deg)", "WebkitTransform": "rotate(360deg)", "transform": "rotate(360deg)", "preserveAspectRatio": "xMidYMid meet", "viewBox": "0 0 24 24" }}>
                                     <path d={"M8.707 19.707L18 10.414L13.586 6l-9.293 9.293a1.003 1.003 0 0 0-.263.464L3 21l5.242-1.03c.176-.044.337-.135.465-.263zM21 7.414a2 2 0 0 0 0-2.828L19.414 3a2 2 0 0 0-2.828 0L15 4.586L19.414 9L21 7.414z"} fill={"#626262"} />
                                 </svg>
                             </Link>

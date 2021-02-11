@@ -80,7 +80,7 @@ export default function UserAppointmentList() {
                     <p>Your Appointments</p>
                 </div>
                 {
-                    [...appointments].sort((a, b) => a > b ? -1 : 1).map((appointment) => {
+                    [...appointments].sort((a, b) => a.dateTime > b.dateTime ? 1 : -1).map((appointment) => {
                         return <AppointmentListEntry
                             appointment={appointment}
                             handleAppointmentCancel={handleAppointmentCancel}
