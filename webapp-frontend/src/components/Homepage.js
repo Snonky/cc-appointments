@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Route, Switch, useHistory, generatePath } from 'react-router-dom';
+import { Route, Switch, useHistory, generatePath, Link } from 'react-router-dom';
 import SearchResult from './SearchResult';
 import DoctorsOffice from './DoctorsOffice';
 import DoctorsOfficeEditor from './DoctorsOfficeEditor';
@@ -8,7 +8,7 @@ import UserAppointmentList from './UserAppointmentList';
 
 const Homepage = () => {
     const [error, setError] = useState(null);
-    const [searchTerms, setSearchTerms] = useState();
+    const [searchTerms, setSearchTerms] = useState("");
     const { currentUser, logout } = useAuth();
     const history = useHistory();
 
@@ -56,7 +56,9 @@ const Homepage = () => {
                         </div>
                     </div>
                     <div>
-                        <span className="inline-block text-sm px-4 py-2 text-black mx-3 mt-4 lg:mt-0">{currentUser.email}</span>
+                        <Link to="/profile">
+                            <span className="inline-block text-sm px-4 py-2 text-black mx-3 mt-4 lg:mt-0 underline hover:no-underline">{currentUser.email}</span>
+                        </Link>
                     </div>
                     <div>
                         <button onClick={handleLogout} className="inline-block text-sm px-4 py-2 leading-none border rounded text-black border-gray-400 hover:border-black mx-3 mt-4 lg:mt-0">Log out</button>
