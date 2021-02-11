@@ -52,6 +52,8 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         jwt_audience: >-
           750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+      security:
+        - service2service: []
     options:
       security: []
       operationId: doctorsOfficeOptions
@@ -369,50 +371,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         jwt_audience: >-
           750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
-    post:
-      operationId: addToUserAppointmentList
-      description: Add appointment to user appointment list
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          type: string
-      responses:
-        '200':
-          description: Success.
-        '404':
-          description: User with this ID not found
-        '422':
-          description: The userAppointment object is not valid
-      x-google-backend:
-        address: 'https://cc-appointments-303011.ey.r.appspot.com'
-        path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: >-
-          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
-      security:
-        - service2service: []
-    delete:
-      operationId: delFromUserAppointmentList
-      description: Remove appointment from user appointment list
-      parameters:
-        - in: path
-          name: userId
-          required: true
-          type: string
-      responses:
-        '200':
-          description: Success.
-        '404':
-          description: User with this ID not found
-        '422':
-          description: The userAppointment object is not valid
-      x-google-backend:
-        address: 'https://cc-appointments-303011.ey.r.appspot.com'
-        path_translation: APPEND_PATH_TO_ADDRESS
-        jwt_audience: >-
-          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
-      security:
-        - service2service: []
     options:
       security: []
       operationId: userAppointmentsOptions
