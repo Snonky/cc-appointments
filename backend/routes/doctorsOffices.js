@@ -23,6 +23,8 @@ const multer = Multer({
 const validateDoctorsOffice = require('../schema/doctorsOffice');
 const validateAppointment = require('../schema/appointment');
 
+const staticBaseUrl = 'https://static.appointments.gq/';
+
 /**
  * These are the paths that for doctors offices themselves
  */
@@ -125,7 +127,7 @@ router.post('/:id/upload-avatar', multer.single('file'), async (req, res) => {
         });
     });
     blobStream.on('finish', async () => {
-        const publicUrl = `https://storage.googleapis.com/cc-appointments-images/${blob.name}`;
+        const publicUrl = staticBaseUrl + blob.name;
         await docsOfficeRef.update({
             avatarUrl: publicUrl,
         });
@@ -168,7 +170,7 @@ router.post('/:id/upload-pictures', multer.array('files'), async (req, res) => {
             });
             blobStream.on('finish', () => {
                 docsOfficeRef.update({
-                    pictureUrls: Firestore.FieldValue.arrayUnion(`https://storage.googleapis.com/cc-appointments-images/${blob.name}`),
+                    pictureUrls: Firestore.FieldValue.arrayUnion(staticBaseUrl + blob.name),
                 })
                     .then(resolve);
             });
