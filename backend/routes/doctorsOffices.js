@@ -23,6 +23,10 @@ const multer = Multer({
 const validateDoctorsOffice = require('../schema/doctorsOffice');
 const validateAppointment = require('../schema/appointment');
 
+/**
+ * These are the paths that for doctors offices themselves
+ */
+
 router.get('/', async (req, res) => {
     const snapshot = await docsOffices.get();
     const results = [];
@@ -33,12 +37,12 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    const docRef = docsOffices.doc(req.params.id);
-    const document = await docRef.get();
-    if (!document.exists) {
+    const docsOfficeRef = docsOffices.doc(req.params.id);
+    const docsOfficeDoc = await docsOfficeRef.get();
+    if (!docsOfficeDoc.exists) {
         res.status(404).json({ error: 'Doctors Office not found' });
     } else {
-        res.send(document.data());
+        res.send(docsOfficeDoc.data());
     }
 });
 
@@ -53,50 +57,53 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
+    const docsOfficeRef = docsOffices.doc(req.params.id);
+    const docsOfficeDoc = await docsOfficeRef.get();
+    if (!docsOfficeDoc.exists) {
+        res.status(404).json({ error: 'Doctors Office not found' });
+        return;
+    }
+    if (req.user.user_id !== docsOfficeDoc.data().ownerId) {
+        res.status(401).json({ error: 'Not authorized to change this doctors office' });
+        return;
+    }
     if (!validateDoctorsOffice(req.body)) {
         res.status(422).json({ error: 'Request is not valid' });
         return;
     }
-    const docRef = docsOffices.doc(req.params.id);
-    const document = await docRef.get();
-    if (!document.exists) {
-        res.status(404).json({ error: 'Doctors Office not found' });
-        return;
-    }
-    if (req.user.user_id !== document.data().ownerId) {
-        res.status(404).json({ error: 'Not authorized to change this doctors office' });
-        return;
-    }
-    await docRef.update(req.body);
+    await docsOfficeRef.update(req.body);
     res.send(req.body);
 });
 
 router.delete('/:id', async (req, res) => {
-    const docRef = docsOffices.doc(req.params.id);
-    const document = await docRef.get();
-    if (!document.exists) {
+    const docsOfficeRef = docsOffices.doc(req.params.id);
+    const docsOfficeDoc = await docsOfficeRef.get();
+    if (!docsOfficeDoc.exists) {
         res.status(404).json({ error: 'Doctors Office not found' });
         return;
     }
-    if (req.user.user_id !== document.data().ownerId) {
-        res.status(404).json({ error: 'Not authorized to delete this doctors office' });
+    if (req.user.user_id !== docsOfficeDoc.data().ownerId) {
+        res.status(401).json({ error: 'Not authorized to delete this doctors office' });
         return;
     }
-    await docRef.delete();
+    await docsOfficeRef.delete();
     res.send({ id: req.params.id });
 });
 
-// image upload
+/**
+ * These are the paths that handle uploading images to a doctors office (it's
+ * avatar or logo and pictures)
+ */
 
 router.post('/:id/upload-avatar', multer.single('file'), async (req, res) => {
-    const docRef = docsOffices.doc(req.params.id);
-    const document = await docRef.get();
-    if (!document.exists) {
+    const docsOfficeRef = docsOffices.doc(req.params.id);
+    const docsOfficeDoc = await docsOfficeRef.get();
+    if (!docsOfficeDoc.exists) {
         res.status(404).json({ error: 'Doctors Office not found' });
         return;
     }
-    if (req.user.user_id !== document.data().ownerId) {
-        res.status(404).json({ error: 'Not authorized to upload images to this doctors office' });
+    if (req.user.user_id !== docsOfficeDoc.data().ownerId) {
+        res.status(401).json({ error: 'Not authorized to upload images to this doctors office' });
         return;
     }
     if (!req.file) {
@@ -119,32 +126,29 @@ router.post('/:id/upload-avatar', multer.single('file'), async (req, res) => {
     });
     blobStream.on('finish', async () => {
         const publicUrl = `https://storage.googleapis.com/cc-appointments-images/${blob.name}`;
-        await docRef.update({
+        await docsOfficeRef.update({
             avatarUrl: publicUrl,
         });
-        const newDocument = await docRef.get();
+        const newDocument = await docsOfficeRef.get();
         res.send(newDocument.data());
     });
     blobStream.end(req.file.buffer);
 });
 
 router.post('/:id/upload-pictures', multer.array('files'), async (req, res) => {
-    const docRef = docsOffices.doc(req.params.id);
-    const document = await docRef.get();
-    if (!document.exists) {
-        res.status(404).json({ error: 'Doctors Office not found' });
+    const docsOfficeRef = docsOffices.doc(req.params.id);
+    const docsOfficeDoc = await docsOfficeRef.get();
+    if (!docsOfficeDoc.exists) {
+        res.status(404).json({ error: 'Doctors office not found' });
         return;
     }
-    if (req.user.user_id !== document.data().ownerId) {
-        res.status(404).json({ error: 'Not authorized to upload images to this doctors office' });
+    if (req.user.user_id !== docsOfficeDoc.data().ownerId) {
+        res.status(401).json({ error: 'Not authorized to upload images to this doctors office' });
         return;
     }
     if (req.files.length === 0) {
         res.status(400).send('No files uploaded');
         return;
-    }
-    if (!('pictureUrls' in document)) {
-        docRef.set({ pictureUrls: [] });
     }
 
     const uploads = [];
@@ -163,7 +167,7 @@ router.post('/:id/upload-pictures', multer.array('files'), async (req, res) => {
                 reject(err);
             });
             blobStream.on('finish', () => {
-                docRef.update({
+                docsOfficeRef.update({
                     pictureUrls: Firestore.FieldValue.arrayUnion(`https://storage.googleapis.com/cc-appointments-images/${blob.name}`),
                 })
                     .then(resolve);
@@ -175,7 +179,7 @@ router.post('/:id/upload-pictures', multer.array('files'), async (req, res) => {
 
     Promise.all(uploads)
         .then(() => {
-            docRef.get().then((newDocument) => {
+            docsOfficeRef.get().then((newDocument) => {
                 res.send(newDocument.data());
             });
         })
@@ -189,53 +193,77 @@ router.post('/:id/upload-pictures', multer.array('files'), async (req, res) => {
 
 // TODO delete pictures
 
-// appointments of one doctors office
+/**
+ * These are the paths that are for appointments of a specific doctors office
+ */
 
 router.get('/:id/appointments', async (req, res) => {
-    const docsRef = docsOffices.doc(req.params.id).collection('appointments');
-    const snapshot = await docsRef.get();
+    const docsOfficeRef = docsOffices.doc(req.params.id);
+    const docsOfficeDoc = await docsOfficeRef.get();
+    if (!docsOfficeDoc.exists) {
+        res.status(404).json({ error: 'Doctors office not found' });
+        return;
+    }
+
+    const appointmentsRef = docsOfficeRef.collection('appointments');
+    const snapshot = await appointmentsRef.get();
     const results = [];
     snapshot.forEach((doc) => {
         results.push({ id: doc.id, dateTime: doc.data().dateTime });
     });
+
     res.send(results);
 });
 
 router.get('/:id/appointments/:appointmentId', async (req, res) => {
-    const docRef = docsOffices.doc(req.params.id).collection('appointments').doc(req.params.appointmentId);
-    const document = await docRef.get();
-    if (!document.exists) {
+    const docsOfficeRef = docsOffices.doc(req.params.id);
+    const docsOfficeDoc = await docsOfficeRef.get();
+    if (!docsOfficeDoc.exists) {
+        res.status(404).json({ error: 'Doctors office not found' });
+        return;
+    }
+    const appointmentRef = docsOfficeRef.collection('appointments').doc(req.params.appointmentId);
+    const appointmentDoc = await appointmentRef.get();
+    if (!appointmentDoc.exists) {
         res.status(404).json({ error: 'Appointment not found' });
         return;
     }
-    const ownerId = await docsOffices.doc(req.params.id).get().data().ownerId;
-    const appointmentUserId = document.data().userId;
-    if (req.user.user_id !== appointmentUserId || req.user.user_id !== ownerId) {
+
+    const { ownerId } = docsOfficeDoc.data();
+    const { userId } = appointmentDoc.data();
+    if (req.user.user_id !== userId && req.user.user_id !== ownerId) {
         res.status(401).json({ error: 'Not authorized to get this appointment' });
         return;
     }
-    res.send(document.data());
+
+    res.send(appointmentDoc.data());
 });
 
 router.post('/:id/appointments', async (req, res) => {
+    const docsOfficeRef = docsOffices.doc(req.params.id);
+    const docsOfficeDoc = await docsOfficeRef.get();
+    if (!docsOfficeDoc.exists) {
+        res.status(404).json({ error: 'Doctors office not found' });
+        return;
+    }
     if (!validateAppointment(req.body)) {
         res.status(422).json({ error: 'Request is not valid' });
         return;
     }
-
-    const snapshot = await docsOffices.doc(req.params.id).collection('appointments').where('dateTime', '==', req.body.dateTime).get();
+    const appointmentsRef = docsOfficeRef.collection('appointments');
+    const snapshot = await appointmentsRef.where('dateTime', '==', req.body.dateTime).get();
     if (!snapshot.empty) {
-        res.status(422).json({ error: 'Appointment already booked' });
+        res.status(400).json({ error: 'Appointment already booked' });
         return;
     }
 
-    const addRes = await docsOffices.doc(req.params.id).collection('appointments').add(req.body);
-    const docRef = userAppointments.doc(req.user.user_id);
-    const document = await docRef.get();
-    if (!document.exists) {
-        await docRef.set({ appointments: [] });
+    const addRes = await appointmentsRef.add(req.body);
+    const userAppointmentRef = userAppointments.doc(req.user.user_id);
+    const userAppointmentDoc = await userAppointmentRef.get();
+    if (!userAppointmentDoc.exists) {
+        await userAppointmentRef.set({ appointments: [] });
     }
-    await docRef.update({
+    await userAppointmentRef.update({
         appointments: Firestore.FieldValue.arrayUnion({
             appointmentId: addRes.id,
             doctorsOfficeId: req.params.id,
@@ -246,14 +274,27 @@ router.post('/:id/appointments', async (req, res) => {
 });
 
 router.delete('/:id/appointments/:appointmentId', async (req, res) => {
-    const docRef = docsOffices.doc(req.params.id).collection('appointments').doc(req.params.appointmentId);
-    const ownerId = await docsOffices.doc(req.params.id).get().data().ownerId;
-    const appointmentUserId = await docRef.get().data().userId;
-    if (req.user.user_id !== appointmentUserId || req.user.user_id !== ownerId) {
+    const docsOfficeRef = docsOffices.doc(req.params.id);
+    const docsOfficeDoc = await docsOfficeRef.get();
+    if (!docsOfficeDoc.exists) {
+        res.status(404).json({ error: 'Doctors office not found' });
+        return;
+    }
+    const appointmentRef = docsOfficeRef.collection('appointments').doc(req.params.appointmentId);
+    const appointmentDoc = await appointmentRef.get();
+    if (!appointmentDoc.exists) {
+        res.status(404).json({ error: 'Appointment not found' });
+        return;
+    }
+
+    const { ownerId } = docsOfficeDoc.data();
+    const { userId } = appointmentDoc.data();
+    if (req.user.user_id !== userId && req.user.user_id !== ownerId) {
         res.status(401).json({ error: 'Not authorized to delete this appointment' });
         return;
     }
-    await docRef.delete();
+
+    await appointmentRef.delete();
     const userDocRef = userAppointments.doc(req.user.user_id);
     await userDocRef.update({
         appointments: Firestore.FieldValue.arrayRemove({

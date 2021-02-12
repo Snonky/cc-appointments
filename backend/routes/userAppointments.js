@@ -7,16 +7,17 @@ const userAppointments = firestore.collection('user-appointments');
 
 router.get('/:id', async (req, res) => {
     if (req.params.id !== req.user.user_id) {
-        res.status(404).json({ error: 'Not authorized to get  appointment' });
+        res.status(401).json({ error: 'Not authorized to get  appointment' });
         return;
     }
-    const docRef = userAppointments.doc(req.params.id);
-    const document = await docRef.get();
-    if (!document.exists) {
+    const userAppointmentRef = userAppointments.doc(req.params.id);
+    const userAppointmentDoc = await userAppointmentRef.get();
+    if (!userAppointmentDoc.exists) {
         res.status(404).json({ error: 'User appointments not found' });
-    } else {
-        res.send(document.data());
+        return;
     }
+
+    res.send(userAppointmentDoc.data());
 });
 
 module.exports = router;
