@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import React, { useEffect, useState } from 'react';
 import { generatePath, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import ErrorMessage from './ErrorMessage';
 import LoadingSpinner from './LoadingSpinner';
 
 export default function UserAppointmentList() {
@@ -9,6 +10,7 @@ export default function UserAppointmentList() {
     const [loading, setLoading] = useState(true);
     const [cancelling, setCancelling] = useState(false);
     const [error, setError] = useState(null);
+    const [cancelError, setCancelError] = useState(null);
     const { currentUser, authenticatedRequest } = useAuth();
 
     function errorHandler(error) {
@@ -22,7 +24,13 @@ export default function UserAppointmentList() {
         setLoading(true);
         authenticatedRequest('GET', generatePath('/user-appointments/:userId', { userId: currentUser.uid }))
             .then((fetchedUserAppointments) => fetchAppointmentDetails(fetchedUserAppointments.appointments))
-            .catch(errorHandler);
+            .catch((error) => {
+                if (error.status === 404) {
+                    fetchAppointmentDetails([]);
+                } else {
+                    errorHandler(error);
+                }
+            });
     }
 
     function fetchAppointmentDetails(userAppointments) {
@@ -55,15 +63,18 @@ export default function UserAppointmentList() {
 
     function handleAppointmentCancel(appointment) {
         setCancelling(true);
+        setCancelError(null);
         authenticatedRequest('DELETE', generatePath('/doctors-offices/:officeId/appointments/:appointmentId',
-            { officeId: appointment.doctorsOfficeId, appointmentId: appointment.id }))
+            { officeId: appointment.doctorsOfficeId, appointmentId: appointment.id}))
             .then(() => {
                 const newAppointments = [...appointments].filter(a => a.id !== appointment.id);
                 setAppointments(newAppointments);
                 setCancelling(false);
             })
             .catch((error) => {
-                console.error("Could not cancel appointment: " + error);
+                console.error("Could not cancel appointment");
+                console.error(error);
+                setCancelError("The appointment could not be cancelled");
                 setCancelling(false);
             });
     }
@@ -79,6 +90,11 @@ export default function UserAppointmentList() {
                 <div id="title" className="flex flex-col justify-center h-20 bg-blue-200 text-center text-2xl rounded border-2 border-gray-400">
                     <p>Your Appointments</p>
                 </div>
+                {
+                    cancelError ?
+                        <ErrorMessage message={cancelError} />
+                        : null
+                }
                 {
                     [...appointments].sort((a, b) => a.dateTime > b.dateTime ? 1 : -1).map((appointment) => {
                         return <AppointmentListEntry

@@ -65,7 +65,10 @@ export function AuthProvider({ children }) {
                                     return response.statusText;
                                 }
                             } else {
-                                return response.json().then(error => { throw new Error(error.error) });
+                                return response.json().then(error => {
+                                    error.status = response.status;
+                                    throw error;
+                                });
                             }
                         });
                 });

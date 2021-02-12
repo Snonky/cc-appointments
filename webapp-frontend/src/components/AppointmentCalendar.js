@@ -32,7 +32,7 @@ export default function AppointmentCalendar({ appointments, fetchAppointments, c
             })
             .catch(error => {
                 fetchAppointments();
-                setError(error.toString());
+                setError(error.error);
                 setLoading(false);
             });
     }

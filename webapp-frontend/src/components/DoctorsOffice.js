@@ -15,6 +15,7 @@ export default function DoctorsOffice() {
     const { currentUser, authenticatedRequest } = useAuth();
 
     function errorHandler(error) {
+        console.error("Error while loading the office page");
         console.error(error);
         setError("Doctor's office page cannot be displayed.");
         setLoading(false);
