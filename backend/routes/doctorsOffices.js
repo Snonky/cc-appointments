@@ -11,7 +11,7 @@ const docsOffices = firestore.collection('doctors-offices');
 const userAppointments = firestore.collection('user-appointments');
 
 const storage = new Storage();
-const bucket = storage.bucket('cc-appointments-images');
+const bucket = storage.bucket('appointments-images');
 
 const multer = Multer({
     storage: Multer.memoryStorage(),

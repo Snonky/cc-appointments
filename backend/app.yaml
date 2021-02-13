@@ -11,6 +11,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START gae_quickstart_yaml]
 runtime: nodejs14
-# [END gae_quickstart_yaml]
+
+instance_class: F1
+
+automatic_scaling:
+  max_concurrent_requests: 50
+  target_cpu_utilization: 0.9
+  max_instances: 100
+  
