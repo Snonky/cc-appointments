@@ -1,0 +1,76 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: user-mapping-api
+  namespace: '750788049521'
+  selfLink: /apis/serving.knative.dev/v1/namespaces/750788049521/services/user-mapping-api
+  uid: d83b0da3-92d2-4983-9663-dc5835ebc3d6
+  resourceVersion: AAW7AF/qJH4
+  generation: 26
+  creationTimestamp: '2021-02-06T18:41:56.366782Z'
+  labels:
+    cloud.googleapis.com/location: europe-west3
+  annotations:
+    run.googleapis.com/client-name: cloud-console
+    serving.knative.dev/creator: florianideldev@gmail.com
+    serving.knative.dev/lastModifier: florianideldev@gmail.com
+    client.knative.dev/user-image: europe-west3-docker.pkg.dev/cc-appointments-303011/user-mapping/mapping-image@sha256:f2cb30ee2563263684bb14f7f0873a7c4fe40fd4a67086d3aedaccb91d622bb5
+    run.googleapis.com/launch-stage: BETA
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+spec:
+  template:
+    metadata:
+      name: user-mapping-api-00026-jap
+      annotations:
+        run.googleapis.com/client-name: cloud-console
+        run.googleapis.com/cloudsql-instances: cc-appointments-303011:europe-west3:userdb
+        autoscaling.knative.dev/maxScale: '100'
+        run.googleapis.com/sandbox: gvisor
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      serviceAccountName: 750788049521-compute@developer.gserviceaccount.com
+      containers:
+      - image: europe-west3-docker.pkg.dev/cc-appointments-303011/user-mapping/mapping-image@sha256:f2cb30ee2563263684bb14f7f0873a7c4fe40fd4a67086d3aedaccb91d622bb5
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_USER
+          value: fkt_user
+        - name: DB_PASS
+          value: 06n6kM#Q#vs6H9
+        - name: CLOUD_SQL_CONNECTION_NAME
+          value: cc-appointments-303011:europe-west3:userdb
+        - name: DB_NAME
+          value: userdb
+        - name: GW_URL
+          value: appointments-api-gateway-9kwntilt.ew.gateway.dev
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 256Mi
+  traffic:
+  - percent: 100
+    latestRevision: true
+status:
+  observedGeneration: 26
+  conditions:
+  - type: Ready
+    status: 'True'
+    lastTransitionTime: '2021-02-10T19:26:06.591085Z'
+  - type: ConfigurationsReady
+    status: 'True'
+    lastTransitionTime: '2021-02-10T19:26:00.435038Z'
+  - type: RoutesReady
+    status: 'True'
+    lastTransitionTime: '2021-02-10T19:26:07.127678Z'
+  latestReadyRevisionName: user-mapping-api-00026-jap
+  latestCreatedRevisionName: user-mapping-api-00026-jap
+  traffic:
+  - revisionName: user-mapping-api-00026-jap
+    percent: 100
+    latestRevision: true
+  url: https://user-mapping-api-vdbus3btaa-ey.a.run.app
+  address:
+    url: https://user-mapping-api-vdbus3btaa-ey.a.run.app
