@@ -17,6 +17,9 @@ module.exports = {
     }
 };
 
+
+const jwtAudience = process.env.AUDIENCE;
+
 function getServiceAccount() {
     if (accountKey === null) {
         const serviceAccounts = firestore.collection('service-account-keys');
@@ -47,7 +50,7 @@ function refreshJwt() {
                 expiresIn: jwtLifetime,
                 issuer: key['client_email'],
                 keyid: key['private_key_id'],
-                audience: 'https://appointments-api-3es94nb1jsz7w.apigateway.cc-appointments-303011.cloud.goog',
+                audience: jwtAudience,
                 subject: key['client_email'],
             };
             return new Promise((resolve, reject) => {
