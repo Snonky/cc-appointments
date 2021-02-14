@@ -1,6 +1,7 @@
 const express = require('express');
 const { Firestore } = require('@google-cloud/firestore');
 const { Storage } = require('@google-cloud/storage');
+const { PubSub } = require('@google-cloud/pubsub');
 const Multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
 
@@ -12,6 +13,9 @@ const userAppointments = firestore.collection('user-appointments');
 
 const storage = new Storage();
 const bucket = storage.bucket('appointments-images');
+
+const pubsub = new PubSub();
+const imageUploadTopic = pubsub.topic('appointments-image-upload');
 
 const multer = Multer({
     storage: Multer.memoryStorage(),
@@ -93,9 +97,19 @@ router.delete('/:id', async (req, res) => {
 });
 
 /**
- * These are the paths that handle uploading images to a doctors office (it's
+ * These are the paths that handle uploading images to a doctor's office (its
  * avatar or logo and pictures)
  */
+
+function publishImageUploadEvent(fileName) {
+    imageUploadTopic.exists((err, exists) => {
+        if (err || !exists) {
+            console.error(`PubSub topic ${imageUploadTopic.name} not found.`);
+        } else {
+            imageUploadTopic.publish(Buffer.from(fileName));
+        }
+    })
+}
 
 router.post('/:id/upload-avatar', multer.single('file'), async (req, res) => {
     const docsOfficeRef = docsOffices.doc(req.params.id);
@@ -133,6 +147,7 @@ router.post('/:id/upload-avatar', multer.single('file'), async (req, res) => {
         });
         const newDocument = await docsOfficeRef.get();
         res.send(newDocument.data());
+        publishImageUploadEvent(fileName);
     });
     blobStream.end(req.file.buffer);
 });
@@ -173,6 +188,7 @@ router.post('/:id/upload-pictures', multer.array('files'), async (req, res) => {
                     pictureUrls: Firestore.FieldValue.arrayUnion(staticBaseUrl + blob.name),
                 })
                     .then(resolve);
+                publishImageUploadEvent(fileName);
             });
         });
         uploads.push(upload);
