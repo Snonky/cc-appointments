@@ -1,71 +1,57 @@
 from PIL import Image
-import requests
 from io import BytesIO
-import json
 from google.cloud import storage
 import os
+import sys
+import base64
 
-PROJECT = os.environ.get("USER_PROJECT") or 'cc-appointments-images'
+PROJECT = os.environ.get("USER_PROJECT") or 'appointments-images'
 IMG_SIZE = int(os.environ.get("USER_IMGSIZE") or 400)
-BASE_URL = os.environ.get("USER_URL") or 'https://static.appointments.gq/'
 
-def upload_blob(bucket_name, blob_text, destination_blob_name, u_format):
+def upload_blob(bucket, file_name, blob_text, u_format):
     #https://stackoverflow.com/questions/52249978/write-to-google-cloud-storage-from-cloud-function-python#
     """Uploads a file to the bucket."""
-    storage_client = storage.Client()
-    bucket = storage_client.get_bucket(bucket_name)
-    blob = bucket.blob(destination_blob_name)
-    print('Uploading {} as {}'.format("image/" + u_format, destination_blob_name))
+    blob = bucket.blob(file_name)
+    print('Uploading {} as {}'.format("image/" + u_format, blob.name))
     blob.upload_from_string(blob_text, content_type="image/" + u_format)
-    print('File reuploaded as {}x{} to {}'.format(str(IMG_SIZE), str(IMG_SIZE), destination_blob_name))
+    print('File reuploaded as {}'.format(blob.name))
+    return 0
 
 
-def checkChange(event, keys=["avatarUrl", "pictureUrls"]):
-    try:
-        paths = event.get("updateMask").get("fieldPaths")
-        result = []
-        for key in keys:
-            if key in paths:
-                result.append(key)
-        if len(result):
-            return result
-    except:
-        return 0
-
-
-def compute_and_load_image(image_url):
-    print("Processing:", image_url)
-    outfile = image_url.split("/")[-1]
-    image_url = BASE_URL + outfile
+def compute_and_load_image(bucket, image_file_name):
+    print("Processing:", image_file_name)
     # Change = Resize Image and push to the same url
-    response = requests.get(image_url, stream=True)
-    img = Image.open(BytesIO(response.content))
-    img_format = str(img.format).lower()
-    #img.thumbnail((IMG_SIZE, IMG_SIZE), Image.ANTIALIAS)
-    img = img.resize((IMG_SIZE, IMG_SIZE), Image.ANTIALIAS)
-    img_byte_arr = BytesIO()
-    img.save(img_byte_arr, format=img_format)
-    upload_blob(PROJECT, img_byte_arr.getvalue(), outfile, img_format)
+    blob = bucket.get_blob(image_file_name)
+    if not blob.exists():
+        print("The image file does not exist in the bucket.", file=sys.stderr)
+        return 0
+    img = Image.open(BytesIO(blob.download_as_bytes()))
+    # Only resize if original image is too large in either of its dimensions
+    current_size = max(img.size)
+    if current_size > IMG_SIZE:
+        downscale_ratio = IMG_SIZE / current_size
+        new_size = (int(downscale_ratio * img.size[0]),
+                    int(downscale_ratio * img.size[1]))
+        img_format = str(img.format).lower()
+        img = img.resize(new_size, Image.ANTIALIAS)
+        img_byte_arr = BytesIO()
+        img.save(img_byte_arr, format=img_format)
+        print('Image resized to {}x{}'.format(img.size[0], img.size[1]))
+        upload_blob(bucket, image_file_name, img_byte_arr.getvalue(), img_format)
+    else:
+        return 0
 
         
 def resize_image(event, context):
-    # Check event for changes in images
-    # No Change = return = Done
-    res = checkChange(event)
-    if (res):
-        if "avatarUrl" in res:
-            avatar_url = event.get("value").get("fields").get("avatarUrl").get("stringValue")
-            compute_and_load_image(avatar_url)
-        if "pictureUrls" in res:
-            picture_urls = event.get("value").get("fields").get("pictureUrls").get("arrayValue").get("values")
-            for pic_url in picture_urls:
-                try:
-                    pic_url = pic_url.get("stringValue")
-                except:
-                    continue
-                try:
-                    compute_and_load_image(pic_url)
-                except:
-                    print("Error while Computing", pic_url)
+    # Upload event triggers image resizer
+    if 'data' in event:
+        file_name = base64.b64decode(event['data']).decode('utf-8')
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(PROJECT)
+        if not bucket.exists():
+            print("The configured image storage bucket does not exist.", file=sys.stderr)
+            return 0
+        compute_and_load_image(bucket, file_name)
     else:
+        print("Image upload event carried no data.", file=sys.stderr)
         return 0
