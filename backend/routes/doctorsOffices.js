@@ -35,10 +35,15 @@ const staticBaseUrl = 'https://static.appointments.gq/';
 
 router.get('/', async (req, res) => {
     const snapshot = await docsOffices.get();
-    const results = [];
+    let results = [];
     snapshot.forEach((doc) => {
         results.push({ id: doc.id, ...doc.data() });
     });
+    if (req.query.search) {
+        results = results.filter(office => {
+            return office.name.toLowerCase().includes(req.query.search.toLowerCase())
+        });
+    }
     res.send(results);
 });
 
