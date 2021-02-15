@@ -34,16 +34,16 @@ const staticBaseUrl = 'https://static.appointments.gq/';
  */
 
 router.get('/', async (req, res) => {
-    const snapshot = await docsOffices.get();
-    let results = [];
+    const snapshot = req.query.search ?
+        await docsOffices.orderBy("name")
+            .startAt(req.query.search)
+            .endAt(req.query.search + "\uf8ff").get()
+        :
+        await docsOffices.get();
+    const results = [];
     snapshot.forEach((doc) => {
         results.push({ id: doc.id, ...doc.data() });
     });
-    if (req.query.search) {
-        results = results.filter(office => {
-            return office.name.toLowerCase().includes(req.query.search.toLowerCase())
-        });
-    }
     res.send(results);
 });
 
