@@ -133,7 +133,7 @@ app.put("/user", async (req, res) => {
             });
         });
         if (isDoctor) {
-            send_default_office(req.query.uid);a
+            send_default_office(req.query.uid);
         }
     } else {
         return res.status(400).send({ success: "false", message: "uid is required", }); 
@@ -160,7 +160,7 @@ function send_default_office(uid) {
     //doctor office als json
     //owner id und name vom office rein
     data = JSON.stringify({
-        name: "Lorem Ipsum Doctor Office",
+        name: uid,
         ownerId: uid
     });
     gw_api.getJwt().then((token) => {
