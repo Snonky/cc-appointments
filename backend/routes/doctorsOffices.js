@@ -37,7 +37,8 @@ router.get('/', async (req, res) => {
     const snapshot = req.query.search ?
         await docsOffices.orderBy("name")
             .startAt(req.query.search)
-            .endAt(req.query.search + "\uf8ff").get()
+            .endAt(req.query.search + "\uf8ff")
+            .limit(100).get()
         :
         await docsOffices.get();
     const results = [];
