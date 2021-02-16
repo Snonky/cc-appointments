@@ -40,6 +40,7 @@ export function AuthProvider({ children }) {
                     const headers = {
                         "Authorization": "Bearer " + idToken,
                     }
+                    let query = "?";
                     if (method !== 'GET') {
                         if (body instanceof FormData) {
                             // The headers will be determined automatically by the FormData content
@@ -50,8 +51,15 @@ export function AuthProvider({ children }) {
                                 body = JSON.stringify(body);
                             }
                         }
+                    } else {
+                        if (body) {
+                            for (const param in body) {
+                                query += `${param}=${body[param]}&`;
+                            }
+                            body = undefined;
+                        }
                     }
-                    return fetch(process.env.REACT_APP_API_DOMAIN + url, {
+                    return fetch(process.env.REACT_APP_API_DOMAIN + url + query, {
                         method: method,
                         mode: 'cors',
                         headers: headers,

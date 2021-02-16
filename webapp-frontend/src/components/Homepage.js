@@ -9,6 +9,7 @@ import UserAppointmentList from './UserAppointmentList';
 const Homepage = () => {
     const [error, setError] = useState(null);
     const [searchTerms, setSearchTerms] = useState("");
+    const [submittedSearch, setSubmittedSearch] = useState("");
     const { currentUser, logout } = useAuth();
     const history = useHistory();
 
@@ -29,6 +30,7 @@ const Homepage = () => {
     function handleSearch(e) {
         e.preventDefault();
         if (searchTerms) {
+            setSubmittedSearch(searchTerms);
             history.push(generatePath('/search/:searchTerms', { searchTerms: searchTerms }));
         }
     }
@@ -91,7 +93,13 @@ const Homepage = () => {
                     />
                     <Route
                         path={"/search/:searchTerms"}
-                        component={SearchResult}
+                        render={() => {
+                            return (
+                                <SearchResult
+                                    searchTerms={submittedSearch}
+                                />
+                            );
+                        }}
                     />
                 </Switch>
             </>

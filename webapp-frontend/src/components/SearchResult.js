@@ -3,7 +3,7 @@ import { Link, generatePath, useRouteMatch, useHistory } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from './LoadingSpinner';
 
-export default function SearchResult() {
+export default function SearchResult({ searchTerms }) {
     const [searchResults, setSearchResults] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -14,7 +14,7 @@ export default function SearchResult() {
     useEffect(() => {
         setError(null);
         setLoading(true);
-        authenticatedRequest('GET', '/doctors-offices/')
+        authenticatedRequest('GET', '/doctors-offices/', { search: params.searchTerms })
             .then((fetchedOffices) => {
                 setSearchResults(fetchedOffices);
                 setLoading(false);
@@ -25,7 +25,7 @@ export default function SearchResult() {
                 setLoading(false);
             });
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [searchTerms]);
 
     if (error) {
         return <p id="error-msg">{error}</p>;
