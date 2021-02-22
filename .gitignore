@@ -124,3 +124,5 @@ backend/cc-appointments-da543c2d9ff5.json
 
 # Build dir
 /webapp-frontend/build
+google-serviceaccounts
+docgen.exe
