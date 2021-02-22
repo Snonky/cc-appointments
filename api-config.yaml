@@ -1,0 +1,461 @@
+swagger: '2.0'
+info:
+  title: appointments-api
+  description: >-
+    Combined API Gateway for the microservices that make up the Appointments
+    Appointments
+  version: 1.0.0
+schemes:
+  - https
+securityDefinitions:
+  firebase:
+    authorizationUrl: ''
+    flow: implicit
+    type: oauth2
+    x-google-issuer: 'https://securetoken.google.com/cc-appointments-303011'
+    x-google-jwks_uri: >-
+      https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com
+    x-google-audiences: cc-appointments-303011
+  service2service:
+    authorizationUrl: ''
+    flow: implicit
+    type: oauth2
+    x-google-issuer: >-
+      appointments-service2service@cc-appointments-303011.iam.gserviceaccount.com
+    x-google-jwks_uri: >-
+      https://www.googleapis.com/robot/v1/metadata/x509/appointments-service2service@cc-appointments-303011.iam.gserviceaccount.com
+security:
+  - firebase: []
+paths:
+  /doctors-offices:
+    get:
+      operationId: officeList
+      description: Get a list of all doctor's office objects
+      responses:
+        '200':
+          description: Success.
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    post:
+      operationId: createOffice
+      description: Create a new doctor's office
+      responses:
+        '200':
+          description: Success.
+        '422':
+          description: Posted office object not valid
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+      security:
+        - service2service: []
+    options:
+      security: []
+      operationId: doctorsOfficeOptions
+      description: Options method
+      responses:
+        '200':
+          description: Success.
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+  '/doctors-offices/{officeId}':
+    get:
+      operationId: office
+      description: Get a single doctor's office object
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: Office with this ID not found
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    put:
+      operationId: updateOffice
+      description: Update a doctor's office object
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: Office with this ID not found
+        '422':
+          description: Posted office object not valid
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    delete:
+      operationId: deleteOffice
+      description: Delete a doctor's office object
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: Office with this ID not found
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    options:
+      security: []
+      operationId: doctorsOfficesOptions
+      description: Options method
+      responses:
+        '200':
+          description: Success.
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+  '/doctors-offices/{officeId}/upload-avatar':
+    post:
+      operationId: uploadOfficeAvatar
+      description: Upload a profile picture for a doctor's office
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '400':
+          description: Image file not sent
+        '404':
+          description: Office with this ID not found
+        '422':
+          description: Wrong file type
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    options:
+      security: []
+      operationId: avatarOptions
+      description: Options method
+      responses:
+        '200':
+          description: Success.
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+  '/doctors-offices/{officeId}/upload-pictures':
+    post:
+      operationId: uploadOfficeGallery
+      description: Upload an array of files to add to the doctor's office gallery
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '400':
+          description: No image files sent
+        '404':
+          description: Office with this ID not found
+        '422':
+          description: Wrong file type
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    options:
+      security: []
+      operationId: galleryOptions
+      description: Options method
+      responses:
+        '200':
+          description: Success.
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+  '/doctors-offices/{officeId}/appointments':
+    get:
+      operationId: appointmentList
+      description: Get an array of all the appointments of this doctor's office
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: Office with this ID not found
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    post:
+      operationId: createAppointment
+      description: Create a new appointment for this doctor's office
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: Office with this ID not found
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    options:
+      security: []
+      operationId: doctorsOfficeAppointmentsOptions
+      description: Options method
+      responses:
+        '200':
+          description: Success.
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+  '/doctors-offices/{officeId}/appointments/{appointmentId}':
+    get:
+      operationId: appointment
+      description: Get a single appointment of this doctor's office
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+        - in: path
+          name: appointmentId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: Office or appointment with this ID not found
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    put:
+      operationId: updateAppointment
+      description: Update an appointment of this doctor's office
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+        - in: path
+          name: appointmentId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: Office or appointment with this ID not found
+        '422':
+          description: The appointment object is not valid
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    delete:
+      operationId: deleteAppointment
+      description: Delete an appointment of this doctor's office
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+        - in: path
+          name: appointmentId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: Office or appointment with this ID not found
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    options:
+      security: []
+      operationId: doctorsOfficeAppointmentOptions
+      description: Options method
+      responses:
+        '200':
+          description: Success.
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+      parameters:
+        - in: path
+          name: officeId
+          required: true
+          type: string
+        - in: path
+          name: appointmentId
+          required: true
+          type: string
+  '/user-appointments/{userId}':
+    get:
+      operationId: userAppointmentList
+      description: Returns all appointments of one user
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: User with this ID not found
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+        jwt_audience: >-
+          750788049521-j14sjqgaji22mglrcvrqjs60qrggt8e0.apps.googleusercontent.com
+    options:
+      security: []
+      operationId: userAppointmentsOptions
+      description: Options method
+      responses:
+        '200':
+          description: Success.
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          type: string
+  /user:
+    get:
+      operationId: user
+      description: Returns a user's current role (doctor/patient)
+      parameters:
+        - in: query
+          name: uid
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: User with this uid not found
+      x-google-backend:
+        address: 'https://user-mapping-api-vdbus3btaa-ey.a.run.app'
+        path_translation: APPEND_PATH_TO_ADDRESS
+      security:
+        - service2service: []
+    put:
+      operationId: updateUser
+      description: Sets a user's current role (doctor/patient)
+      parameters:
+        - in: query
+          name: uid
+          required: true
+          type: string
+        - in: query
+          name: isDoctor
+          required: true
+          type: integer
+      responses:
+        '200':
+          description: Success.
+        '400':
+          description: The requested role does not exist
+        '404':
+          description: User with this uid not found
+      x-google-backend:
+        address: 'https://user-mapping-api-vdbus3btaa-ey.a.run.app'
+        path_translation: APPEND_PATH_TO_ADDRESS
+      security:
+        - service2service: []
+    delete:
+      operationId: deleteUser
+      description: >-
+        Deletes a user's current role (doctor/patient) thereby makes it a
+        patient
+      parameters:
+        - in: query
+          name: uid
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Success.
+        '404':
+          description: User with this uid not found
+      x-google-backend:
+        address: 'https://user-mapping-api-vdbus3btaa-ey.a.run.app'
+        path_translation: APPEND_PATH_TO_ADDRESS
+      security:
+        - service2service: []
+    options:
+      security: []
+      operationId: userOptions
+      description: Options method
+      responses:
+        '200':
+          description: Success.
+      x-google-backend:
+        address: 'https://cc-appointments-303011.ey.r.appspot.com'
+        path_translation: APPEND_PATH_TO_ADDRESS
