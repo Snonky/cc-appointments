@@ -1,6 +1,5 @@
 # Function dependencies, for example:
 # package>=version
 google>=3.0.0
-requests>=2.25.1
 google-cloud-storage>=1.36.0
 Pillow>=8.1.0
