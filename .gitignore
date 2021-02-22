@@ -107,6 +107,7 @@ dist
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+.vs
 
 # yarn v2
 .yarn/cache
@@ -117,5 +118,6 @@ dist
 
 # google api key
 backend/cc-appointments-da543c2d9ff5.json
-
+google-serviceaccounts
 docgen.exe
+
